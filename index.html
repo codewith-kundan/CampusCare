@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NITR CampusCare | NIT Rourkela</title>
+    <meta name="description" content="Report, route and track campus issues at NIT Rourkela — hostel, mess, academic, electricity and infrastructure complaints, resolved transparently.">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header data-navbar>
+
+        <a href="index.html" class="brand-mark">
+            <div class="brand-mark__logo">NIT</div>
+            <div class="brand-mark__text">
+                <strong>NIT ROURKELA</strong>
+                <span>CampusCare</span>
+            </div>
+        </a>
+
+        <div data-nav-menu>
+            <nav class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+
+            <div class="nav-buttons">
+                <a href="login.html" class="btn btn-outline-light btn-sm">Login</a>
+                <button type="button" class="btn btn-primary btn-sm" id="registerNavBtn">Register Complaint</button>
+            </div>
+        </div>
+
+        <button type="button" class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <main id="home">
+
+        <section class="hero">
+
+            <div class="hero-photo-wrap" data-photo-wrap>
+                <img
+                    class="hero-image"
+                    data-photo
+                    src="https://commons.wikimedia.org/wiki/Special:FilePath/Aerial_view_from_National_Institute_of_Technology_Campus%2C_Rourkela%2C_Sundargarh%2C_Odisha%2C_India_(2015).jpg?width=1920"
+                    alt="Aerial view of the NIT Rourkela campus">
+            </div>
+
+            <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+
+                <div class="hero-badge" data-reveal data-reveal-delay="0">
+                    NIT ROURKELA &nbsp;•&nbsp; CAMPUSCARE
+                </div>
+
+                <h1 data-reveal data-reveal-delay="80">
+                    Your Campus.
+                    <br>
+                    <span>Your Voice.</span>
+                </h1>
+
+                <p data-reveal data-reveal-delay="160">
+                    A smarter way to report, route and resolve issues across
+                    the NIT Rourkela campus — from hostel and mess to
+                    electricity and infrastructure.
+                </p>
+
+                <div class="hero-buttons" data-reveal data-reveal-delay="240">
+                    <button type="button" class="btn btn-primary" id="reportIssueBtn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Report an Issue
+                    </button>
+                    <button type="button" class="btn btn-outline-light" id="trackHeroBtn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        Track Complaint
+                    </button>
+                </div>
+
+                <div class="hero-trust" data-reveal data-reveal-delay="320">
+                    <div><strong>24/7</strong><span>Complaint Access</span></div>
+                    <div><strong>100%</strong><span>Trackable</span></div>
+                    <div><strong>1</strong><span>Unified Portal</span></div>
+                </div>
+
+            </div>
+
+            <div class="scroll-indicator">Scroll to explore ↓</div>
+
+        </section>
+
+
+        <!-- ================= STATS ================= -->
+
+        <section class="stats">
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <span class="stat-icon">
+                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><path d="M9 12h6M9 16h6"/></svg>
+                </span>
+                <div>
+                    <strong data-counter="124" data-counter-suffix="+">0</strong>
+                    <p>Complaints Registered</p>
+                </div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <span class="stat-icon">
+                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+                </span>
+                <div>
+                    <strong data-counter="18">0</strong>
+                    <p>Currently In Progress</p>
+                </div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <span class="stat-icon">
+                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <div>
+                    <strong data-counter="96" data-counter-suffix="+">0</strong>
+                    <p>Issues Resolved</p>
+                </div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <span class="stat-icon">
+                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>
+                </span>
+                <div>
+                    <strong>24/7</strong>
+                    <p>Campus Support</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= SERVICES ================= -->
+
+        <section class="services" id="services">
+
+            <div class="section-heading" data-reveal>
+                <span class="eyebrow">How it works</span>
+                <h2>
+                    Solve campus problems,
+                    <br>
+                    <em>one report at a time.</em>
+                </h2>
+                <p>
+                    CampusCare connects students with the right department to
+                    make campus problem-solving faster and more transparent —
+                    every step of the way is logged and trackable.
+                </p>
+            </div>
+
+            <div class="service-grid">
+
+                <div class="service-card" data-tilt data-tilt-strength="5" data-reveal data-reveal-delay="0">
+                    <div class="service-number">01</div>
+                    <div class="service-icon">
+                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    <h3>Submit</h3>
+                    <p>Tell us about the problem and attach a photo if it helps explain the issue.</p>
+                </div>
+
+                <div class="service-card" data-tilt data-tilt-strength="5" data-reveal data-reveal-delay="90">
+                    <div class="service-number">02</div>
+                    <div class="service-icon">
+                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    </div>
+                    <h3>Review</h3>
+                    <p>Your complaint is reviewed and routed to the department responsible for it.</p>
+                </div>
+
+                <div class="service-card" data-tilt data-tilt-strength="5" data-reveal data-reveal-delay="180">
+                    <div class="service-number">03</div>
+                    <div class="service-icon">
+                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+                    </div>
+                    <h3>Resolve</h3>
+                    <p>The responsible team works the issue and updates its status as it moves.</p>
+                </div>
+
+                <div class="service-card" data-tilt data-tilt-strength="5" data-reveal data-reveal-delay="270">
+                    <div class="service-number">04</div>
+                    <div class="service-icon">
+                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <h3>Complete</h3>
+                    <p>Get a clear confirmation the moment your complaint is marked resolved.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CAMPUS VIDEO ================= -->
+
+        <section class="campus-video">
+
+            <div class="video-content" data-reveal>
+                <span class="eyebrow on-dark">Experience NIT Rourkela</span>
+                <h2>More than a campus. <em>It's home.</em></h2>
+                <p>Explore the campus, community and environment that make NIT Rourkela special.</p>
+            </div>
+
+            <div class="video-container" data-reveal data-reveal-delay="100">
+                <div class="video-frame" id="videoFrame">
+                    <img
+                        class="video-poster"
+                        src="https://img.youtube.com/vi/W1uMJ794q2g/hqdefault.jpg"
+                        alt="NIT Rourkela campus tour video preview"
+                        loading="lazy"
+                        onerror="this.style.display='none'">
+                    <button type="button" class="play-button" id="playVideoBtn" aria-label="Play campus tour video">
+                        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <div class="video-caption">
+                        <p>NIT Rourkela Campus Tour</p>
+                        <small>Watch on YouTube</small>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= TRACK ================= -->
+
+        <section class="track-section">
+
+            <div class="track-card" data-reveal>
+
+                <div>
+                    <span class="eyebrow">Have a complaint?</span>
+                    <h2>Know what's happening with your complaint.</h2>
+                    <p>Enter your complaint ID to jump straight to its current status and full timeline.</p>
+                </div>
+
+                <form class="track-form" id="trackForm">
+                    <input type="text" id="trackInput" placeholder="Enter Complaint ID (optional)">
+                    <button type="submit">
+                        Track Complaint
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </button>
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ABOUT ================= -->
+
+        <section class="about" id="about">
+
+            <div class="about-image" data-photo-wrap>
+                <img
+                    data-photo
+                    src="https://commons.wikimedia.org/wiki/Special:FilePath/NITRKLGate.jpg?width=1200"
+                    alt="Main gate of NIT Rourkela"
+                    loading="lazy">
+            </div>
+
+            <div class="about-content" data-reveal>
+                <span class="eyebrow">About CampusCare</span>
+                <h2>Building a better campus together.</h2>
+                <p>CampusCare gives students a transparent, convenient way to report campus issues — and follow them through to resolution.</p>
+                <p>From hostel and mess facilities to electricity, connectivity, cleanliness and infrastructure, every complaint is registered, routed and tracked from one place.</p>
+                <a href="#services" class="btn btn-primary">Learn More →</a>
+            </div>
+
+        </section>
+
+
+        <!-- ================= FAQ ================= -->
+
+        <section class="faq">
+
+            <div class="section-heading" data-reveal>
+                <span class="eyebrow">Good to know</span>
+                <h2>Frequently asked <em>questions.</em></h2>
+            </div>
+
+            <div class="faq-list" data-reveal data-reveal-delay="100">
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        Who can use CampusCare?
+                        <svg class="icon faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Any registered NIT Rourkela student with an official <code>@nitrkl.ac.in</code> email address. You'll verify your email and roll number once, then sign in for every future visit.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        What kinds of issues can I report?
+                        <svg class="icon faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Hostel, Mess/Food, Academic, Electricity, Internet/Wi-Fi, Cleanliness, Infrastructure, or anything else affecting campus life — there's an "Other" category for issues that don't fit neatly elsewhere.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        Can I attach a photo as evidence?
+                        <svg class="icon faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes — it's optional, but a photo often helps the reviewing department understand the issue faster. JPG, PNG or WEBP, up to 5 MB.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        How do I know if my complaint is being worked on?
+                        <svg class="icon faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Every complaint moves through a visible timeline — Submitted → Under Review → In Progress → Completed — from your dashboard or the My Complaints page, and updates as soon as its status changes.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        Who can see my complaint?
+                        <svg class="icon faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Only you and the department it's routed to. You can revisit or track it any time by signing back in.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CTA ================= -->
+
+        <section class="cta" data-reveal>
+            <div>
+                <span class="eyebrow on-dark">Make your voice heard</span>
+                <h2>See something that needs fixing?</h2>
+                <p>Don't just notice it. Report it.</p>
+                <button type="button" class="btn btn-light" id="ctaRegisterBtn">Register a Complaint →</button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer id="contact">
+
+        <div class="footer-main">
+
+            <div class="footer-brand">
+                <div class="brand-mark__logo">NIT</div>
+                <h3>NITR CampusCare</h3>
+                <p>A smarter campus starts with your voice.</p>
+            </div>
+
+            <div>
+                <h4>Platform</h4>
+                <a href="#" id="footerReportLink">Report Issue</a>
+                <a href="#" id="footerTrackLink">Track Complaint</a>
+                <a href="login.html">Login</a>
+                <a href="dashboard.html">Dashboard</a>
+            </div>
+
+            <div>
+                <h4>NIT Rourkela</h4>
+                <a href="#home">Campus</a>
+                <a href="#services">Facilities</a>
+                <a href="#contact">Contact</a>
+                <a href="https://www.nitrkl.ac.in" target="_blank" rel="noopener">Official Website</a>
+            </div>
+
+            <div>
+                <h4>Support</h4>
+                <a href="#faq-anchor" id="footerFaqLink">FAQs</a>
+                <a href="mailto:campuscare@nitrkl.ac.in">Contact Support</a>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 NITR CampusCare</span>
+            <span>Built for the NIT Rourkela community</span>
+        </div>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="effects.js" defer></script>
+    <script src="script.js" defer></script>
+
+</body>
+
+</html>

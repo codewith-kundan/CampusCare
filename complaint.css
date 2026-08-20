@@ -1,0 +1,205 @@
+/* ================================================================
+   COMPLAINT-DETAILS.HTML — page-specific styles
+   (file kept as complaint.css to match the project's existing
+   naming convention)
+================================================================ */
+
+body { background: var(--surface); }
+.brand-mark { text-decoration: none; }
+
+.container { width: min(820px, 92%); margin: 46px auto 90px; }
+
+.page-header { margin-bottom: 26px; }
+.page-header h1 { font-family: var(--font-display); font-size: 36px; margin-top: 8px; letter-spacing: -.5px; }
+.page-header p { color: var(--slate); margin-top: 8px; font-size: 14.5px; }
+
+
+/* ================= LOADING / ERROR ================= */
+
+.loading { padding: 10px 0; }
+
+.error-box {
+    background: white;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--r-lg);
+    padding: 70px 24px;
+    text-align: center;
+}
+.error-icon { display: flex; justify-content: center; color: var(--red-ink); margin-bottom: 16px; }
+.error-box h2 { font-size: 19px; font-family: var(--font-display); }
+.error-box p { color: var(--slate); margin: 8px 0 22px; font-size: 14px; }
+.back-main-btn {
+    display: inline-block; text-decoration: none; background: var(--maroon-600); color: white;
+    padding: 12px 20px; border-radius: 9px; font-weight: 700; font-size: 13.5px;
+}
+
+
+/* ================= CARD ================= */
+
+.complaint-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    padding: 38px;
+    box-shadow: var(--shadow-md);
+}
+
+.complaint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+}
+
+.category { font-size: 11px; font-weight: 800; color: var(--maroon-600); text-transform: uppercase; letter-spacing: .5px; }
+.complaint-title { font-family: var(--font-display); font-size: 27px; margin-top: 8px; letter-spacing: -.3px; }
+.complaint-id { margin-top: 8px; color: var(--slate); font-size: 12px; font-family: var(--font-mono); }
+
+
+/* ================= DETAILS GRID ================= */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+}
+
+.detail-box {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+.detail-box span { display: block; font-size: 11.5px; color: var(--slate); margin-bottom: 6px; }
+.detail-box strong { font-size: 14.5px; }
+
+.priority-value { display: inline-flex; align-items: center; gap: 6px; }
+.priority-value::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--amber-ink); }
+#priority[data-priority="Low"]::before { background: #15803D; }
+#priority[data-priority="Medium"]::before { background: var(--amber-ink); }
+#priority[data-priority="High"]::before { background: #C2410C; }
+#priority[data-priority="Urgent"]::before { background: var(--red-ink); }
+
+
+/* ================= SECTIONS ================= */
+
+.section { margin-top: 30px; }
+.section h2 { font-size: 15px; margin-bottom: 14px; font-family: var(--font-display); }
+
+.description {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 18px 20px;
+    color: var(--slate-700);
+    line-height: 1.75;
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+
+/* ================= EVIDENCE ================= */
+
+.evidence-frame {
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    max-height: 360px;
+}
+.evidence-frame img { width: 100%; max-height: 360px; object-fit: cover; }
+
+
+/* ================= TIMELINE ================= */
+
+.timeline { display: flex; flex-direction: column; }
+
+.timeline-item {
+    position: relative;
+    padding: 0 0 30px 40px;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: 11px; top: 26px; bottom: 0;
+    width: 2px;
+    background: var(--line-strong);
+}
+.timeline-item:last-child::before { display: none; }
+.timeline-item.active::before { background: var(--maroon-600); }
+
+.timeline-dot {
+    position: absolute;
+    left: 0; top: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--line-strong);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .3s var(--ease);
+}
+.timeline-item.active .timeline-dot { background: var(--maroon-600); box-shadow: 0 0 0 4px rgba(139,30,45,.14); }
+
+.timeline-item h3 { font-size: 14.5px; }
+.timeline-item p { color: var(--slate); font-size: 12.5px; margin-top: 4px; font-family: var(--font-mono); }
+.timeline-item.active h3 { color: var(--ink-900); }
+.timeline-item:not(.active) h3 { color: var(--slate); }
+
+.timeline-item.active:last-child .timeline-dot {
+    animation: pulseDot 1.8s ease-in-out infinite;
+}
+@keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(139,30,45,.14); }
+    50% { box-shadow: 0 0 0 8px rgba(139,30,45,.08); }
+}
+
+
+/* ================= ACTIONS ================= */
+
+.page-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+
+.secondary-btn {
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--slate-700);
+    border: 1px solid var(--line-strong);
+    background: white;
+    padding: 12px 20px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.secondary-btn:hover { background: var(--surface); }
+
+.primary-btn {
+    text-decoration: none;
+    display: inline-flex; align-items: center;
+    background: var(--maroon-600); color: white;
+    padding: 12px 22px; border-radius: 9px; font-weight: 700; font-size: 13.5px;
+    transition: .2s;
+}
+.primary-btn:hover { background: var(--maroon-500); }
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 650px) {
+    .app-nav { padding: 0 4%; }
+    .container { margin-top: 30px; }
+    .complaint-card { padding: 24px; }
+    .details-grid { grid-template-columns: 1fr 1fr; }
+    .complaint-header { flex-direction: column; }
+    .page-actions { flex-direction: column; }
+    .secondary-btn, .primary-btn { width: 100%; justify-content: center; }
+}
+
+
+/* ================= PRINT ================= */
+
+@media print {
+    .complaint-card { box-shadow: none; border: none; }
+    body { background: white; }
+    .container { width: 100%; margin: 0; padding: 20px; }
+}

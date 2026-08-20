@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | NITR CampusCare</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="dashboard.css">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="app-nav">
+
+        <a href="dashboard.html" class="brand-mark">
+            <div class="brand-mark__logo" style="color:var(--maroon-600); background:var(--surface);">NIT</div>
+            <div class="brand-mark__text" style="color:var(--ink-900);">
+                <strong>NIT ROURKELA</strong>
+                <span style="color:var(--maroon-600); opacity:1;">CampusCare</span>
+            </div>
+        </a>
+
+        <ul class="app-nav__links">
+            <li><a href="dashboard.html" class="is-active"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
+            <li><a href="my-complaints.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>My Complaints</a></li>
+            <li><a href="register-complaint.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New Complaint</a></li>
+        </ul>
+
+        <div class="app-nav__right">
+            <span class="app-nav__user" id="userName">Student</span>
+            <button type="button" class="icon-btn" id="logoutBtn" aria-label="Log out" title="Log out">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN -->
+
+    <main class="dashboard">
+
+
+        <!-- HERO -->
+
+        <section class="hero-section" data-reveal>
+
+            <div class="hero-content">
+                <span class="eyebrow on-dark">Student Dashboard</span>
+                <h1>Welcome back, <span id="welcomeName">Student</span> 👋</h1>
+                <p>Manage your campus complaints, report new issues and track every complaint from submission to resolution.</p>
+                <button type="button" class="btn btn-light" id="newComplaintBtn">+ Register a Complaint</button>
+            </div>
+
+            <div class="hero-decoration">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>
+                </div>
+                <span>NIT Rourkela</span>
+                <small>Student Support Portal</small>
+            </div>
+
+        </section>
+
+
+        <!-- STATISTICS -->
+
+        <section class="stats" data-reveal data-reveal-delay="80">
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <div class="stat-icon" style="color:var(--maroon-600)">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>
+                </div>
+                <div><span>Total Complaints</span><h2 id="totalComplaints">0</h2></div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <div class="stat-icon" style="color:var(--amber-ink)">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+                </div>
+                <div><span>Pending</span><h2 id="pendingComplaints">0</h2></div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <div class="stat-icon" style="color:var(--blue-ink)">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 3v6h-6"/></svg>
+                </div>
+                <div><span>In Progress</span><h2 id="progressComplaints">0</h2></div>
+            </div>
+
+            <div class="stat-card" data-tilt data-tilt-strength="6">
+                <div class="stat-icon" style="color:var(--green-ink)">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <div><span>Completed</span><h2 id="completedComplaints">0</h2></div>
+            </div>
+
+        </section>
+
+
+        <!-- CONTENT -->
+
+        <section class="content-grid">
+
+            <!-- COMPLAINTS -->
+
+            <div class="complaints-card" data-reveal data-reveal-delay="60">
+
+                <div class="section-header">
+                    <div>
+                        <span class="eyebrow">Complaints</span>
+                        <h2>My Recent Complaints</h2>
+                    </div>
+                    <button type="button" id="viewAllBtn">View All →</button>
+                </div>
+
+                <div id="complaintsList">
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                </div>
+
+            </div>
+
+
+            <!-- PROFILE -->
+
+            <aside class="profile-card" data-tilt data-tilt-strength="4" data-reveal data-reveal-delay="140">
+
+                <div class="profile-avatar">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                </div>
+
+                <h2 id="profileName">Student</h2>
+                <p id="profileEmail">student@nitrkl.ac.in</p>
+
+                <div class="profile-info">
+                    <div><span>Roll Number</span><strong id="profileRoll" class="mono">—</strong></div>
+                    <div><span>Account</span><strong>Student</strong></div>
+                </div>
+
+                <button type="button" class="profile-btn" id="profileBtn">View Full Profile</button>
+
+            </aside>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="effects.js" defer></script>
+    <script src="dashboard.js" defer></script>
+
+</body>
+
+</html>

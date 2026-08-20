@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register Complaint | NITR CampusCare</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="register-complaint.css">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="app-nav">
+
+        <a href="dashboard.html" class="brand-mark">
+            <div class="brand-mark__logo" style="color:var(--maroon-600); background:var(--surface);">NIT</div>
+            <div class="brand-mark__text" style="color:var(--ink-900);">
+                <strong>NIT ROURKELA</strong>
+                <span style="color:var(--maroon-600); opacity:1;">CampusCare</span>
+            </div>
+        </a>
+
+        <ul class="app-nav__links">
+            <li><a href="dashboard.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
+            <li><a href="my-complaints.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>My Complaints</a></li>
+            <li><a href="register-complaint.html" class="is-active"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New Complaint</a></li>
+        </ul>
+
+        <div class="app-nav__right">
+            <a href="dashboard.html" class="icon-btn" aria-label="Back to dashboard" title="Back to dashboard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN -->
+
+    <main class="complaint-page">
+
+        <div class="page-header" data-reveal>
+            <span class="eyebrow">CampusCare</span>
+            <h1>Register a Complaint</h1>
+            <p>Tell us about the issue you're facing on campus. Your complaint will be routed to the appropriate department for review.</p>
+        </div>
+
+        <div class="complaint-layout">
+
+            <form class="complaint-card" id="complaintForm" novalidate data-reveal data-reveal-delay="80">
+
+                <div class="submitting-as" id="submittingAs">
+                    <div class="submitting-avatar">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                    </div>
+                    <div>
+                        <strong id="studentNameDisplay">Student</strong>
+                        <span id="studentMetaDisplay">—</span>
+                    </div>
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="form-group">
+                    <label>Complaint Category</label>
+
+                    <div class="category-grid" id="categoryGrid">
+
+                        <button type="button" class="category-tile" data-value="Hostel">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V7l6-4 6 4v14"/><path d="M10 21v-6h4v6"/></svg>
+                            <span>Hostel</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Mess">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8Z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
+                            <span>Mess / Food</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Academic">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+                            <span>Academic</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Electricity">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
+                            <span>Electricity</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Internet">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M12 20h.01"/></svg>
+                            <span>Internet / Wi-Fi</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Cleanliness">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12Z"/></svg>
+                            <span>Cleanliness</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Infrastructure">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L2 19l3 3 7.3-7.3a4 4 0 0 0 5.4-5.4l-2.1 2.1-2.5-2.5 2.1-2.1Z"/></svg>
+                            <span>Infrastructure</span>
+                        </button>
+
+                        <button type="button" class="category-tile" data-value="Other">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+                            <span>Other</span>
+                        </button>
+
+                    </div>
+
+                    <input type="hidden" id="category">
+
+                </div>
+
+
+                <!-- TITLE -->
+
+                <div class="form-group">
+                    <label for="title">Complaint Title</label>
+                    <input type="text" id="title" placeholder="Briefly describe the issue" maxlength="120" required>
+                </div>
+
+
+                <!-- PRIORITY + LOCATION -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <div class="priority-group" id="priorityGroup">
+                            <button type="button" class="priority-pill" data-value="Low">Low</button>
+                            <button type="button" class="priority-pill is-selected" data-value="Medium">Medium</button>
+                            <button type="button" class="priority-pill" data-value="High">High</button>
+                            <button type="button" class="priority-pill" data-value="Urgent">Urgent</button>
+                        </div>
+                        <input type="hidden" id="priority" value="Medium">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location <span class="optional-tag">(optional)</span></label>
+                        <input type="text" id="location" placeholder="e.g. Hostel Block C, Room 214" maxlength="120">
+                    </div>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Explain the problem in detail — what happened, since when, and anything you've already tried." maxlength="1000" required></textarea>
+                    <div class="character-count"><span id="descCount">0</span>/1000</div>
+                </div>
+
+
+                <!-- EVIDENCE -->
+
+                <div class="form-group">
+
+                    <label>Photo Evidence <span class="optional-tag">(optional)</span></label>
+
+                    <div class="upload-box" id="uploadBox">
+                        <input type="file" id="evidence" accept="image/jpeg,image/png,image/webp" hidden>
+                        <div class="upload-icon">
+                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A5 5 0 0 1 6 5.3 6 6 0 0 1 17.7 8H18a4 4 0 0 1 1 7.9"/><path d="M12 12v9M8 16l4-4 4 4"/></svg>
+                        </div>
+                        <div class="upload-title">Drop a photo here or click to browse</div>
+                        <div class="upload-subtitle">JPG, PNG or WEBP • Maximum 5 MB</div>
+                        <span class="choose-file">Choose Image</span>
+                    </div>
+
+                    <div class="preview-container" id="previewContainer">
+                        <img id="imagePreview" alt="Evidence preview">
+                        <div class="file-info">
+                            <span id="fileName">—</span>
+                            <button type="button" id="removeFile" class="remove-file">✕ Remove</button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="message" id="formMessage"></div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="form-actions">
+                    <a href="dashboard.html" class="cancel-btn">Cancel</a>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="spinner dark"></span>
+                        <span class="btn-label">Submit Complaint</span>
+                    </button>
+                </div>
+
+            </form>
+
+
+            <aside class="tips-card" data-reveal data-reveal-delay="150">
+
+                <h3>Tips for a faster resolution</h3>
+
+                <ul>
+                    <li><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Be specific about location — block, floor or room number.</li>
+                    <li><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Attach a photo whenever the issue is visible.</li>
+                    <li><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Set priority honestly — it helps departments triage.</li>
+                    <li><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>You can track progress any time from My Complaints.</li>
+                </ul>
+
+                <div class="info-box">
+                    <div class="info-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    </div>
+                    <div>
+                        <strong>Response time</strong>
+                        <p>Most complaints receive an initial review within 2–3 working days.</p>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="effects.js" defer></script>
+    <script src="register-complaint.js" defer></script>
+
+</body>
+
+</html>
