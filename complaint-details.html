@@ -2,213 +2,199 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Complaint Details | NITR CampusCare</title>
+    <meta name="description" content="View live resolution timeline and details for your NIT Rourkela grievance.">
+    <meta name="theme-color" content="#8B1E2D">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="complaint.css">
-
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-
-    <nav class="app-nav no-print">
-
-        <a href="dashboard.html" class="brand-mark">
-            <div class="brand-mark__logo" style="color:var(--maroon-600); background:var(--surface);">NIT</div>
-            <div class="brand-mark__text" style="color:var(--ink-900);">
-                <strong>NIT ROURKELA</strong>
-                <span style="color:var(--maroon-600); opacity:1;">CampusCare</span>
-            </div>
-        </a>
-
-        <ul class="app-nav__links">
-            <li><a href="dashboard.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
-            <li><a href="my-complaints.html" class="is-active"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>My Complaints</a></li>
-            <li><a href="register-complaint.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New Complaint</a></li>
-        </ul>
-
-        <div class="app-nav__right">
-            <a href="my-complaints.html" class="icon-btn" aria-label="Back to my complaints" title="Back to my complaints">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <!-- ================= NAVBAR ================= -->
+    <header class="app-navbar no-print">
+        <div class="app-navbar-container">
+            <a href="dashboard.html" class="navbar-brand">
+                <div class="navbar-brand-logo">NIT</div>
+                <div>CampusCare</div>
             </a>
-        </div>
 
-    </nav>
+            <nav class="navbar-nav">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="my-complaints.html" class="nav-link">My Complaints</a>
+                <a href="register-complaint.html" class="nav-link">New Complaint</a>
+            </nav>
 
-
-    <!-- MAIN -->
-
-    <main class="container">
-
-        <div class="page-header no-print">
-            <span class="eyebrow">CampusCare</span>
-            <h1>Complaint Details</h1>
-            <p>Track the progress of your complaint.</p>
-        </div>
-
-
-        <!-- LOADING -->
-
-        <div id="loading" class="loading">
-            <div class="skeleton skeleton-line" style="width:30%;"></div>
-            <div class="skeleton skeleton-card" style="height:220px; margin-top:16px;"></div>
-        </div>
-
-
-        <!-- CONTENT -->
-
-        <div id="content" style="display:none;">
-
-            <div class="complaint-card">
-
-
-                <!-- HEADER -->
-
-                <div class="complaint-header">
-
-                    <div>
-                        <div id="category" class="category">General</div>
-                        <h2 id="title" class="complaint-title">Complaint</h2>
-                        <p id="complaintId" class="complaint-id">Complaint ID: —</p>
-                    </div>
-
-                    <span id="status" class="status pending">Pending</span>
-
-                </div>
-
-
-                <!-- DETAILS -->
-
-                <div class="details-grid">
-
-                    <div class="detail-box">
-                        <span>Submitted</span>
-                        <strong id="date">—</strong>
-                    </div>
-
-                    <div class="detail-box">
-                        <span>Category</span>
-                        <strong id="detailCategory">—</strong>
-                    </div>
-
-                    <div class="detail-box">
-                        <span>Priority</span>
-                        <strong id="priority" class="priority-value">Medium</strong>
-                    </div>
-
-                    <div class="detail-box" id="locationBox" style="display:none;">
-                        <span>Location</span>
-                        <strong id="detailLocation">—</strong>
-                    </div>
-
-                </div>
-
-
-                <!-- DESCRIPTION -->
-
-                <div class="section">
-                    <h2>Description</h2>
-                    <div id="description" class="description">—</div>
-                </div>
-
-
-                <!-- EVIDENCE -->
-
-                <div class="section" id="evidenceSection" style="display:none;">
-                    <h2>Photo Evidence</h2>
-                    <div class="evidence-frame" data-photo-wrap>
-                        <img id="evidenceImage" data-photo alt="Complaint evidence photo">
-                    </div>
-                </div>
-
-
-                <!-- TIMELINE -->
-
-                <div class="section">
-
-                    <h2>Status Timeline</h2>
-
-                    <div class="timeline">
-
-                        <div id="timelineSubmitted" class="timeline-item active">
-                            <div class="timeline-dot">
-                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                            </div>
-                            <h3>Complaint Submitted</h3>
-                            <p id="timelineDate">—</p>
-                        </div>
-
-                        <div id="timelineReview" class="timeline-item">
-                            <div class="timeline-dot">
-                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                            </div>
-                            <h3>Under Review</h3>
-                            <p>Your complaint is waiting for review.</p>
-                        </div>
-
-                        <div id="timelineProgress" class="timeline-item">
-                            <div class="timeline-dot">
-                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                            </div>
-                            <h3>In Progress</h3>
-                            <p>The responsible department is working on it.</p>
-                        </div>
-
-                        <div id="timelineCompleted" class="timeline-item">
-                            <div class="timeline-dot">
-                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                            </div>
-                            <h3>Completed</h3>
-                            <p>The complaint has been resolved.</p>
-                        </div>
-
-                    </div>
-                </div>
-
-
-            </div>
-
-
-            <!-- ACTIONS -->
-
-            <div class="page-actions no-print">
-
-                <a href="my-complaints.html" class="secondary-btn">← Back to My Complaints</a>
-
-                <button type="button" class="secondary-btn" id="printBtn">
-                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-                    Print
+            <div class="navbar-actions">
+                <a href="my-complaints.html" class="btn btn-ghost btn-sm">← Back to Complaints</a>
+                <button class="mobile-nav-toggle btn btn-ghost btn-sm" aria-label="Toggle navigation menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-
-                <a href="register-complaint.html" class="primary-btn">+ New Complaint</a>
-
             </div>
+        </div>
+    </header>
 
+    <!-- ================= PRINT ONLY HEADER ================= -->
+    <div class="print-header" style="display: none;">
+        <div style="border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 1.5rem; margin: 0;">NATIONAL INSTITUTE OF TECHNOLOGY, ROURKELA</h1>
+                <p style="font-size: 0.875rem; margin: 2px 0 0; color: #444;">CampusCare Student Grievance Resolution Slip</p>
+            </div>
+            <div style="text-align: right; font-family: monospace; font-size: 0.8125rem;">
+                Official Copy
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN ================= -->
+    <main class="container py-8 complaint-layout">
+
+        <div class="page-header mb-6 no-print" data-reveal>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h1 style="font-size: 2rem; margin-bottom: 4px;">Complaint Status</h1>
+                    <p class="text-muted text-sm">Real-time status tracking and grievance audit history.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline btn-sm" id="printBtn">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        Print Slip
+                    </button>
+                    <a href="register-complaint.html" class="btn btn-primary btn-sm">+ New Complaint</a>
+                </div>
+            </div>
         </div>
 
+        <!-- LOADING SKELETON -->
+        <div id="loading" class="py-4">
+            <div class="skeleton mb-4" style="width: 40%; height: 28px;"></div>
+            <div class="skeleton" style="height: 340px; border-radius: var(--r-lg);"></div>
+        </div>
+
+        <!-- COMPLAINT GRID CONTENT -->
+        <div id="content" style="display:none;" class="complaint-grid">
+
+            <!-- MAIN CARD -->
+            <div>
+                <div class="card mb-6">
+                    <!-- HEADER METADATA -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; gap: 16px; flex-wrap: wrap;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                                <span id="category" class="row-category">General</span>
+                                <span class="id-badge" id="complaintId">ID: —</span>
+                            </div>
+                            <h2 id="title" style="font-size: 1.375rem; margin-bottom: 4px; color: var(--navy-900);">Complaint Title</h2>
+                            <div class="text-xs text-muted">Submitted by <strong id="studentName" style="color: var(--navy-800);">Student</strong></div>
+                        </div>
+                        <span id="status" class="status-badge status-pending">Pending</span>
+                    </div>
+
+                    <!-- META INFO TILES -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 28px;">
+                        <div class="meta-tile">
+                            <div class="text-xs text-muted mb-1 font-medium">Filing Date</div>
+                            <div class="text-sm font-bold font-mono" id="date">—</div>
+                        </div>
+                        <div class="meta-tile">
+                            <div class="text-xs text-muted mb-1 font-medium">Priority</div>
+                            <div class="text-sm font-bold" id="priority">Medium</div>
+                        </div>
+                        <div class="meta-tile" id="locationBox">
+                            <div class="text-xs text-muted mb-1 font-medium">Location</div>
+                            <div class="text-sm font-bold" id="detailLocation">Campus</div>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="mb-6">
+                        <h3 class="section-subheading">Detailed Description</h3>
+                        <div id="description" class="description-text">—</div>
+                    </div>
+
+                    <!-- PHOTO EVIDENCE -->
+                    <div id="evidenceSection" style="display:none;" class="mb-6">
+                        <h3 class="section-subheading">Photo Evidence</h3>
+                        <div class="evidence-wrapper">
+                            <img id="evidenceImage" alt="Complaint photo evidence" loading="lazy">
+                        </div>
+                    </div>
+
+                    <!-- INTERNAL ADMIN NOTES (if any provided) -->
+                    <div id="adminNotesSection" style="display: none; padding: 14px 16px; background: var(--surface-alt); border-radius: var(--r-md); border-left: 4px solid var(--nitr-red);">
+                        <div class="text-xs font-bold uppercase text-muted tracking-wider mb-1">Administrative Remark</div>
+                        <div id="adminNotesText" class="text-sm text-slate">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE SIDEBAR -->
+            <aside class="sidebar no-print">
+                <div class="card" style="background: var(--surface-alt); border: 1px solid var(--line);">
+                    <h3 style="font-size: 1.0625rem; margin-bottom: 20px;">Resolution Timeline</h3>
+                    
+                    <div class="timeline" id="timelineContainer">
+                        
+                        <div class="timeline-item active" id="timelineSubmitted">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Submitted</div>
+                                <div class="timeline-desc" id="timelineDateSubmitted">Waiting...</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" id="timelinePending">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Pending Review</div>
+                                <div class="timeline-desc" id="timelineDatePending">Waiting...</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" id="timelineProgress">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">In Progress</div>
+                                <div class="timeline-desc" id="timelineDateProgress">Waiting...</div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item" id="timelineCompleted">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Resolved & Closed</div>
+                                <div class="timeline-desc" id="timelineDateCompleted">Waiting...</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 0.75rem; color: var(--slate);">
+                        Live sync enabled. Status changes from administration update automatically without refreshing.
+                    </div>
+                </div>
+            </aside>
+
+        </div>
 
     </main>
 
-
-    <!-- SUPABASE -->
-
+    <!-- ================= SCRIPTS ================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="supabase-config.js" defer></script>
     <script src="effects.js" defer></script>
     <script src="complaint.js" defer></script>
 
 </body>
-
 </html>

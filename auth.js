@@ -1,495 +1,302 @@
-// ========================================
-// NITR CAMPUSCARE - SUPABASE AUTHENTICATION
-// ========================================
-
-
-// ========================================
-// HERO VISUAL (lightweight 2D — this is a
-// secondary page, the full 3D scene is reserved
-// for the homepage hero)
-// ========================================
+// ===============================================
+// NITR CAMPUSCARE — AUTHENTICATION SCRIPT
+// ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ========================================
+    // HERO VISUAL (Lightweight Canvas Background)
+    // ========================================
     const canvas = document.querySelector("[data-hero-canvas]");
-
-    if (canvas && window.CampusCare) {
+    if (canvas && window.CampusCare && typeof window.CampusCare.initHeroVisual === 'function') {
         window.CampusCare.initHeroVisual(canvas, { force2D: true });
     }
-});
 
+    // ========================================
+    // REMEMBERED EMAIL RESTORE
+    // ========================================
+    const emailInput = document.getElementById("email");
+    const rememberCheckbox = document.getElementById("remember");
 
-// ========================================
-// PASSWORD VISIBILITY
-// ========================================
-
-const togglePassword = document.getElementById("togglePassword");
-const password = document.getElementById("password");
-
-if (togglePassword && password) {
-
-    togglePassword.addEventListener("click", () => {
-
-        const showing = password.type === "text";
-
-        password.type = showing ? "password" : "text";
-
-        togglePassword.querySelector(".eye-show").style.display = showing ? "" : "none";
-        togglePassword.querySelector(".eye-hide").style.display = showing ? "none" : "";
-
-        togglePassword.setAttribute("aria-label", showing ? "Show password" : "Hide password");
-    });
-}
-
-
-// ========================================
-// PASSWORD STRENGTH METER
-// ========================================
-
-const registerPasswordInput = document.getElementById("registerPassword");
-const passwordStrength = document.getElementById("passwordStrength");
-
-if (registerPasswordInput && passwordStrength) {
-
-    registerPasswordInput.addEventListener("input", () => {
-
-        const value = registerPasswordInput.value;
-        let score = 0;
-
-        if (value.length >= 6) score++;
-        if (value.length >= 10) score++;
-        if (/[A-Z]/.test(value) && /[0-9]/.test(value)) score++;
-        if (/[^A-Za-z0-9]/.test(value)) score++;
-
-        passwordStrength.dataset.level = value.length === 0 ? "0" : Math.max(1, score);
-    });
-}
-
-
-// ========================================
-// FORM ELEMENTS
-// ========================================
-
-const showRegister = document.getElementById("showRegister");
-const showLogin = document.getElementById("showLogin");
-
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
-
-const registerBox = document.querySelector(".register-box");
-
-
-// ========================================
-// SWITCH TO REGISTER
-// ========================================
-
-if (showRegister) {
-
-    showRegister.addEventListener("click", () => {
-
-        loginForm.classList.add("hidden");
-        registerBox.classList.add("hidden");
-        registerForm.classList.remove("hidden");
-    });
-}
-
-
-// ========================================
-// SWITCH BACK TO LOGIN
-// ========================================
-
-if (showLogin) {
-
-    showLogin.addEventListener("click", () => {
-
-        registerForm.classList.add("hidden");
-        loginForm.classList.remove("hidden");
-        registerBox.classList.remove("hidden");
-    });
-}
-
-
-// ========================================
-// BUTTON LOADING STATE HELPER
-// ========================================
-
-function setLoading(button, loading) {
-
-    if (!button) return;
-
-    button.disabled = loading;
-    button.classList.toggle("is-loading", loading);
-}
-
-
-// ========================================
-// REGISTER
-// ========================================
-
-if (registerForm) {
-
-    registerForm.addEventListener("submit", async (event) => {
-
-        event.preventDefault();
-
-        const message = document.getElementById("registerMessage");
-        const submitBtn = document.getElementById("registerSubmit");
-
-        const name =
-            document.getElementById("registerName").value.trim();
-
-        const email =
-            document.getElementById("registerEmail").value.trim();
-
-        const rollNumber =
-            document.getElementById("rollNumber").value.trim();
-
-        const registerPassword =
-            document.getElementById("registerPassword").value;
-
-
-        // Clear previous message
-
-        message.textContent = "";
-        message.style.color = "";
-
-
-        // ========================================
-        // NIT ROURKELA EMAIL CHECK
-        // ========================================
-
-        if (!email.toLowerCase().endsWith("@nitrkl.ac.in")) {
-
-            message.textContent =
-                "Please use your official NIT Rourkela email address.";
-
-            message.style.color = "#dc2626";
-
-            return;
+    try {
+        const savedEmail = localStorage.getItem("campuscare_remembered_email");
+        if (savedEmail && emailInput) {
+            emailInput.value = savedEmail;
+            if (rememberCheckbox) rememberCheckbox.checked = true;
         }
+    } catch (e) {
+        console.warn("Storage access not available:", e);
+    }
 
+    // ========================================
+    // PASSWORD VISIBILITY TOGGLE
+    // ========================================
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
 
-        // ========================================
-        // PASSWORD CHECK
-        // ========================================
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener("click", () => {
+            const isText = passwordInput.type === "text";
+            passwordInput.type = isText ? "password" : "text";
 
-        if (registerPassword.length < 6) {
+            const eyeShow = togglePassword.querySelector(".eye-show");
+            const eyeHide = togglePassword.querySelector(".eye-hide");
+            if (eyeShow && eyeHide) {
+                eyeShow.style.display = isText ? "block" : "none";
+                eyeHide.style.display = isText ? "none" : "block";
+            }
+            togglePassword.setAttribute("aria-label", isText ? "Show password" : "Hide password");
+        });
+    }
 
-            message.textContent =
-                "Password must contain at least 6 characters.";
+    // ========================================
+    // PASSWORD STRENGTH METER
+    // ========================================
+    const registerPasswordInput = document.getElementById("registerPassword");
+    const passwordStrength = document.getElementById("passwordStrength");
 
-            message.style.color = "#dc2626";
+    if (registerPasswordInput && passwordStrength) {
+        registerPasswordInput.addEventListener("input", () => {
+            const val = registerPasswordInput.value;
+            let score = 0;
+            if (val.length >= 6) score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            return;
-        }
+            passwordStrength.dataset.level = val.length === 0 ? "0" : Math.max(1, score);
+        });
+    }
 
+    // ========================================
+    // FORM SWITCHING (LOGIN <-> REGISTER)
+    // ========================================
+    const showRegisterBtn = document.getElementById("showRegister");
+    const showLoginBtn = document.getElementById("showLogin");
+    const loginSection = document.getElementById("loginSection");
+    const registerSection = document.getElementById("registerSection");
 
-        // ========================================
-        // ROLL NUMBER CHECK
-        // ========================================
+    if (showRegisterBtn && showLoginBtn && loginSection && registerSection) {
+        showRegisterBtn.addEventListener("click", () => {
+            loginSection.classList.add("hidden");
+            registerSection.classList.remove("hidden");
+        });
 
-        if (rollNumber.length < 4) {
+        showLoginBtn.addEventListener("click", () => {
+            registerSection.classList.add("hidden");
+            loginSection.classList.remove("hidden");
+        });
+    }
 
-            message.textContent =
-                "Please enter a valid roll number.";
+    // ========================================
+    // SIGN IN SUBMISSION
+    // ========================================
+    const loginForm = document.getElementById("loginForm");
+    const loginSubmitBtn = document.getElementById("loginSubmit");
+    const loginMessage = document.getElementById("loginMessage");
 
-            message.style.color = "#dc2626";
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!supabaseClient) {
+                if (window.CampusCare) CampusCare.toast("Authentication service unavailable.", "error");
+                return;
+            }
 
-            return;
-        }
+            const email = emailInput?.value.trim();
+            const password = passwordInput?.value;
 
+            if (!email || !password) {
+                if (loginMessage) {
+                    loginMessage.textContent = "Please enter both email and password.";
+                    loginMessage.className = "message text-red";
+                }
+                return;
+            }
 
-        // ========================================
-        // SHOW LOADING
-        // ========================================
+            // Save or clear remembered email
+            try {
+                if (rememberCheckbox?.checked) {
+                    localStorage.setItem("campuscare_remembered_email", email);
+                } else {
+                    localStorage.removeItem("campuscare_remembered_email");
+                }
+            } catch (err) {}
 
-        setLoading(submitBtn, true);
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.classList.add("is-loading");
+            if (loginMessage) {
+                loginMessage.textContent = "Signing in...";
+                loginMessage.className = "message text-slate";
+            }
 
-        message.textContent = "Creating your account...";
-        message.style.color = "#475569";
-
-
-        try {
-
-            // ========================================
-            // SUPABASE SIGN UP
-            // ========================================
-
-            const { data, error } =
-                await supabaseClient.auth.signUp({
-
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
+                    password: password
+                });
 
-                    password: registerPassword,
+                if (error) {
+                    throw error;
+                }
 
+                if (loginMessage) {
+                    loginMessage.textContent = "Login successful! Redirecting...";
+                    loginMessage.className = "message text-green font-bold";
+                }
+
+                if (window.CampusCare) CampusCare.toast("Signed in successfully!", "success");
+
+                setTimeout(() => {
+                    const role = data.user?.user_metadata?.role;
+                    if (role === 'admin' || role === 'teacher') {
+                        window.location.href = "teacher-dashboard.html";
+                    } else {
+                        window.location.href = "dashboard.html";
+                    }
+                }, 600);
+
+            } catch (err) {
+                console.error("Login failed:", err);
+                const msg = err.message || "Failed to sign in. Please check credentials.";
+                if (loginMessage) {
+                    loginMessage.textContent = msg;
+                    loginMessage.className = "message text-red";
+                }
+                if (window.CampusCare) CampusCare.toast(msg, "error");
+            } finally {
+                loginSubmitBtn.disabled = false;
+                loginSubmitBtn.classList.remove("is-loading");
+            }
+        });
+    }
+
+    // ========================================
+    // SIGN UP SUBMISSION
+    // ========================================
+    const registerForm = document.getElementById("registerForm");
+    const registerSubmitBtn = document.getElementById("registerSubmit");
+    const registerMessage = document.getElementById("registerMessage");
+
+    if (registerForm) {
+        registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!supabaseClient) return;
+
+            const name = document.getElementById("registerName")?.value.trim();
+            const email = document.getElementById("registerEmail")?.value.trim();
+            const rollNumber = document.getElementById("rollNumber")?.value.trim();
+            const password = registerPasswordInput?.value;
+
+            if (!name || !email || !rollNumber || !password) {
+                if (registerMessage) {
+                    registerMessage.textContent = "Please fill in all fields.";
+                    registerMessage.className = "message text-red";
+                }
+                return;
+            }
+
+            if (!email.toLowerCase().endsWith("@nitrkl.ac.in")) {
+                if (registerMessage) {
+                    registerMessage.textContent = "Please use your official @nitrkl.ac.in email address.";
+                    registerMessage.className = "message text-red";
+                }
+                if (window.CampusCare) CampusCare.toast("Official @nitrkl.ac.in email required.", "warning");
+                return;
+            }
+
+            if (password.length < 6) {
+                if (registerMessage) {
+                    registerMessage.textContent = "Password must be at least 6 characters long.";
+                    registerMessage.className = "message text-red";
+                }
+                return;
+            }
+
+            registerSubmitBtn.disabled = true;
+            registerSubmitBtn.classList.add("is-loading");
+            if (registerMessage) {
+                registerMessage.textContent = "Creating your account...";
+                registerMessage.className = "message text-slate";
+            }
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
                     options: {
-
                         data: {
-
                             full_name: name,
-
-                            roll_number: rollNumber
-
+                            roll_number: rollNumber,
+                            role: 'student'
                         }
-
                     }
-
                 });
 
+                if (error) throw error;
 
-            // ========================================
-            // ERROR
-            // ========================================
+                if (registerMessage) {
+                    registerMessage.textContent = "Account created! Check your email to verify and sign in.";
+                    registerMessage.className = "message text-green font-bold";
+                }
 
-            if (error) {
+                if (window.CampusCare) {
+                    CampusCare.toast("Account created! Please check your email to verify.", "success", 5000);
+                }
 
-                console.error("Registration error:", error);
+                registerForm.reset();
+                if (passwordStrength) passwordStrength.dataset.level = "0";
 
-                message.textContent = error.message;
+            } catch (err) {
+                console.error("Sign up failed:", err);
+                const msg = err.message || "Failed to create account.";
+                if (registerMessage) {
+                    registerMessage.textContent = msg;
+                    registerMessage.className = "message text-red";
+                }
+                if (window.CampusCare) CampusCare.toast(msg, "error");
+            } finally {
+                registerSubmitBtn.disabled = false;
+                registerSubmitBtn.classList.remove("is-loading");
+            }
+        });
+    }
 
-                message.style.color = "#dc2626";
+    // ========================================
+    // FORGOT PASSWORD
+    // ========================================
+    const forgotPasswordBtn = document.getElementById("forgotPassword");
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const email = emailInput?.value.trim();
 
-                if (window.CampusCare) CampusCare.toast(error.message, "error");
-
+            if (!email) {
+                if (window.CampusCare) {
+                    CampusCare.toast("Please enter your email in the field above first.", "info");
+                }
+                emailInput?.focus();
                 return;
             }
 
-
-            // ========================================
-            // SUCCESS
-            // ========================================
-
-            message.textContent =
-                "Account created successfully! Check your email to verify your account.";
-
-            message.style.color = "#16a34a";
-
-            if (window.CampusCare) {
-                CampusCare.toast("Account created — check your email to verify.", "success");
-            }
-
-
-            // Clear form
-
-            registerForm.reset();
-            if (passwordStrength) passwordStrength.dataset.level = "0";
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            message.textContent =
-                "Something went wrong. Please try again.";
-
-            message.style.color = "#dc2626";
-
-        }
-
-        finally {
-
-            setLoading(submitBtn, false);
-        }
-
-    });
-
-}
-
-
-// ========================================
-// LOGIN
-// ========================================
-
-if (loginForm) {
-
-    loginForm.addEventListener("submit", async (event) => {
-
-        event.preventDefault();
-
-
-        const message =
-            document.getElementById("loginMessage");
-
-        const submitBtn =
-            document.getElementById("loginSubmit");
-
-
-        const email =
-            document.getElementById("email").value.trim();
-
-
-        const passwordValue =
-            document.getElementById("password").value;
-
-
-        setLoading(submitBtn, true);
-
-        message.textContent =
-            "Signing you in...";
-
-        message.style.color =
-            "#475569";
-
-
-        try {
-
-            // ========================================
-            // SUPABASE LOGIN
-            // ========================================
-
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-
-                    email: email,
-
-                    password: passwordValue
-
+            try {
+                const redirectUrl = window.location.origin + "/reset-password.html";
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl
                 });
 
+                if (error) throw error;
 
-            // ========================================
-            // LOGIN ERROR
-            // ========================================
-
-            if (error) {
-
-                console.error("Login error:", error);
-
-                message.textContent =
-                    error.message;
-
-                message.style.color =
-                    "#dc2626";
-
-                if (window.CampusCare) CampusCare.toast(error.message, "error");
-
-                return;
+                if (window.CampusCare) {
+                    CampusCare.toast("Password reset instructions sent to your email.", "success", 5000);
+                }
+            } catch (err) {
+                console.error("Password reset error:", err);
+                if (window.CampusCare) {
+                    CampusCare.toast(err.message || "Could not send reset instructions.", "error");
+                }
             }
+        });
+    }
 
-
-            // ========================================
-            // LOGIN SUCCESS
-            // ========================================
-
-            message.textContent =
-                "Login successful! Redirecting...";
-
-            message.style.color =
-                "#16a34a";
-
-
-            console.log("Logged in user:", data.user);
-
-
-            // ========================================
-            // DASHBOARD REDIRECT
-            // ========================================
-
-            setTimeout(() => {
-
-                window.location.href =
-                    "dashboard.html";
-
-            }, 800);
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            message.textContent =
-                "Something went wrong. Please try again.";
-
-            message.style.color =
-                "#dc2626";
-
-            setLoading(submitBtn, false);
-
-        }
-
-    });
-
-}
-
-
-// ========================================
-// FORGOT PASSWORD
-// ========================================
-
-const forgotPassword =
-    document.getElementById("forgotPassword");
-
-
-if (forgotPassword) {
-
-    forgotPassword.addEventListener("click", async (event) => {
-
-        event.preventDefault();
-
-
-        const email =
-            document.getElementById("email").value.trim();
-
-
-        if (!email) {
-
-            if (window.CampusCare) {
-                CampusCare.toast("Please enter your email address first.", "info");
-            } else {
-                alert("Please enter your email address first.");
-            }
-
-            return;
-        }
-
-
-        try {
-
-            const { error } =
-                await supabaseClient.auth.resetPasswordForEmail(
-
-                    email,
-
-                    {
-                        redirectTo:
-                            window.location.origin +
-                            "/reset-password.html"
-                    }
-
-                );
-
-
-            if (error) {
-
-                if (window.CampusCare) CampusCare.toast(error.message, "error");
-                else alert(error.message);
-
-                return;
-            }
-
-
-            if (window.CampusCare) {
-                CampusCare.toast("Password reset instructions sent to your email.", "success");
-            } else {
-                alert("Password reset instructions have been sent to your email.");
-            }
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            if (window.CampusCare) {
-                CampusCare.toast("Unable to send password reset email.", "error");
-            } else {
-                alert("Unable to send password reset email.");
-            }
-
-        }
-
-    });
-
-}
+});

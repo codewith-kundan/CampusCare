@@ -2,80 +2,76 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Complaints | NITR CampusCare</title>
+    <title>My Complaints Ledger | NITR CampusCare</title>
+    <meta name="description" content="View, search, filter, and track all your submitted NIT Rourkela complaints and maintenance requests.">
+    <meta name="theme-color" content="#8B1E2D">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="my-complaints.css">
-
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-
-    <nav class="app-nav">
-
-        <a href="dashboard.html" class="brand-mark">
-            <div class="brand-mark__logo" style="color:var(--maroon-600); background:var(--surface);">NIT</div>
-            <div class="brand-mark__text" style="color:var(--ink-900);">
-                <strong>NIT ROURKELA</strong>
-                <span style="color:var(--maroon-600); opacity:1;">CampusCare</span>
-            </div>
-        </a>
-
-        <ul class="app-nav__links">
-            <li><a href="dashboard.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
-            <li><a href="my-complaints.html" class="is-active"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>My Complaints</a></li>
-            <li><a href="register-complaint.html"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New Complaint</a></li>
-        </ul>
-
-        <div class="app-nav__right">
-            <a href="dashboard.html" class="icon-btn" aria-label="Back to dashboard" title="Back to dashboard">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <!-- ================= NAVBAR ================= -->
+    <header class="app-navbar">
+        <div class="app-navbar-container">
+            <a href="dashboard.html" class="navbar-brand">
+                <div class="navbar-brand-logo">NIT</div>
+                <div>CampusCare</div>
             </a>
+
+            <nav class="navbar-nav">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="my-complaints.html" class="nav-link active">My Complaints</a>
+                <a href="register-complaint.html" class="nav-link">New Complaint</a>
+            </nav>
+
+            <div class="navbar-actions">
+                <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+                <button class="mobile-nav-toggle btn btn-ghost btn-sm" aria-label="Toggle navigation menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <main class="container py-8 my-complaints-layout">
+
+        <div class="page-header mb-6" data-reveal style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 6px;">My Complaints</h1>
+                <p class="text-muted text-sm">View, search, and track the progress of every complaint you've filed.</p>
+            </div>
+            <a href="register-complaint.html" class="btn btn-primary btn-sm">+ File New Complaint</a>
         </div>
 
-    </nav>
-
-
-    <!-- MAIN -->
-
-    <main class="container">
-
-        <span class="eyebrow">CampusCare</span>
-        <h1 data-reveal>My Complaints</h1>
-        <p class="subtitle" data-reveal data-reveal-delay="60">View, search and track every complaint you've submitted.</p>
-
-
-        <!-- SEARCH + FILTER -->
-
-        <div class="top-bar" data-reveal data-reveal-delay="120">
-
+        <!-- SEARCH + MULTI-FILTER BAR -->
+        <div class="filter-bar mb-6" data-reveal data-reveal-delay="60">
             <div class="search-box">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input type="text" id="searchInput" placeholder="Search your complaints...">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" class="form-input" placeholder="Search by title, description or #ID...">
             </div>
 
             <div class="filters">
-
-                <select id="statusFilter">
-                    <option value="all">All Status</option>
+                <select id="statusFilter" class="form-input">
+                    <option value="all">All Statuses</option>
+                    <option value="Submitted">Submitted</option>
                     <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
+                    <option value="Completed">Completed / Resolved</option>
                 </select>
 
-                <select id="categoryFilter">
+                <select id="categoryFilter" class="form-input">
                     <option value="all">All Categories</option>
                     <option value="Hostel">Hostel</option>
                     <option value="Mess">Mess</option>
@@ -87,30 +83,27 @@
                     <option value="Other">Other</option>
                 </select>
 
+                <select id="sortFilter" class="form-input">
+                    <option value="newest">Sort: Newest</option>
+                    <option value="oldest">Sort: Oldest</option>
+                </select>
             </div>
-
         </div>
 
-
-        <!-- COMPLAINTS -->
-
-        <div id="complaintsContainer" class="complaints-container">
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
-            <div class="skeleton skeleton-card"></div>
+        <!-- COMPLAINTS LIST CONTAINER -->
+        <div id="complaintsContainer" class="complaints-container" data-reveal data-reveal-delay="120">
+            <div class="skeleton" style="height: 110px; border-radius: var(--r-md); margin-bottom: 12px;"></div>
+            <div class="skeleton" style="height: 110px; border-radius: var(--r-md); margin-bottom: 12px;"></div>
+            <div class="skeleton" style="height: 110px; border-radius: var(--r-md);"></div>
         </div>
 
     </main>
 
-
-    <!-- SUPABASE -->
-
+    <!-- ================= SCRIPTS ================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="supabase-config.js" defer></script>
     <script src="effects.js" defer></script>
     <script src="my-complaints.js" defer></script>
 
 </body>
-
 </html>

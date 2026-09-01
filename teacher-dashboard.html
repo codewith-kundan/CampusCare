@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administration & Faculty Dashboard | NITR CampusCare</title>
+    <meta name="description" content="Official grievance management portal for NIT Rourkela Chief Wardens, Maintenance Staff, and Administrators.">
+    <meta name="theme-color" content="#8B1E2D">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B1E2D'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11' stroke='%23C9A15A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="teacher-dashboard.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="app-navbar">
+        <div class="app-navbar-container">
+            <a href="teacher-dashboard.html" class="navbar-brand">
+                <div class="navbar-brand-logo">NIT</div>
+                <div>CampusCare <span class="admin-tag">Staff / Admin</span></div>
+            </a>
+
+            <div class="navbar-actions">
+                <div class="user-badge" style="text-align: right; display: flex; flex-direction: column;">
+                    <span id="teacherName" class="text-xs font-bold truncate" style="max-width: 160px;">Faculty Administrator</span>
+                    <span id="teacherDept" class="text-xs text-muted">Admin Access</span>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline btn-sm" aria-label="Logout" title="Logout">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= BULK ACTION BAR ================= -->
+    <div id="bulkActionBar" class="bulk-action-bar hidden">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; flex-wrap: wrap; gap: 12px;">
+            <span id="bulkCount" class="font-bold text-sm" style="color: var(--nitr-red);">0 complaints selected</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select id="bulkStatusSelect" class="form-input" style="height: 38px; min-width: 160px; padding-top: 0; padding-bottom: 0;">
+                    <option value="">Update Status...</option>
+                    <option value="Pending">Mark as Pending</option>
+                    <option value="In Progress">Mark as In Progress</option>
+                    <option value="Completed">Mark as Resolved / Completed</option>
+                </select>
+                <button id="bulkApplyBtn" class="btn btn-primary btn-sm" style="height: 38px;">Apply Status</button>
+                <button id="bulkCancelBtn" class="btn btn-ghost btn-sm" style="height: 38px;">Deselect All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN ================= -->
+    <main class="container py-8 teacher-layout">
+
+        <div class="page-header mb-6" data-reveal style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 4px;">Faculty & Admin Ledger</h1>
+                <p class="text-muted text-sm">Review, assign, and update resolution states for student campus grievances.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="exportCsvBtn" class="btn btn-outline btn-sm">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export CSV Ledger
+                </button>
+            </div>
+        </div>
+
+        <!-- ANALYTICS CARDS -->
+        <div class="analytics-grid mb-6" data-reveal data-reveal-delay="60">
+            <div class="card stat-card-admin">
+                <div class="text-xs text-muted font-bold uppercase tracking-wider mb-1">Total Grievances</div>
+                <div class="text-2xl font-bold font-mono" id="statTotal">--</div>
+            </div>
+            <div class="card stat-card-admin">
+                <div class="text-xs text-muted font-bold uppercase tracking-wider mb-1">Under Review</div>
+                <div class="text-2xl font-bold font-mono text-amber" id="statPending">--</div>
+            </div>
+            <div class="card stat-card-admin">
+                <div class="text-xs text-muted font-bold uppercase tracking-wider mb-1">In Progress</div>
+                <div class="text-2xl font-bold font-mono text-blue" id="statInProgress">--</div>
+            </div>
+            <div class="card stat-card-admin">
+                <div class="text-xs text-muted font-bold uppercase tracking-wider mb-1">Resolved</div>
+                <div class="text-2xl font-bold font-mono text-green" id="statResolved">--</div>
+            </div>
+        </div>
+
+        <!-- CONTROL BAR -->
+        <div class="filter-bar mb-6" data-reveal data-reveal-delay="100">
+            <div class="search-box">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" class="form-input" placeholder="Search by title, student name, roll number, or #ID...">
+            </div>
+            
+            <div class="filters">
+                <select id="statusFilter" class="form-input">
+                    <option value="all">All Statuses</option>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Resolved / Completed</option>
+                </select>
+                <select id="priorityFilter" class="form-input">
+                    <option value="all">All Priorities</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+                <select id="categoryFilter" class="form-input">
+                    <option value="all">All Categories</option>
+                    <option value="Hostel">Hostel</option>
+                    <option value="Mess">Mess</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Internet">Internet</option>
+                    <option value="Cleanliness">Cleanliness</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="sortFilter" class="form-input">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- LIST CONTROLS -->
+        <div class="list-controls mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" id="selectAllCb">
+                <span class="checkmark"></span>
+                <span class="ml-2 text-xs font-bold text-slate">Select All Loaded</span>
+            </label>
+            <span id="loadingIndicator" class="spinner hidden" style="width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--nitr-red); border-radius: 50%; animation: spin 0.8s linear infinite;"></span>
+        </div>
+
+        <!-- COMPLAINTS LIST -->
+        <div id="complaintsContainer" class="complaints-container mb-6" data-reveal data-reveal-delay="140">
+            <div class="skeleton" style="height: 180px; border-radius: var(--r-lg); margin-bottom: 14px;"></div>
+            <div class="skeleton" style="height: 180px; border-radius: var(--r-lg);"></div>
+        </div>
+        
+        <div class="load-more-container" style="text-align: center;">
+            <button id="loadMoreBtn" class="btn btn-outline btn-sm hidden">Load More Complaints</button>
+        </div>
+        
+    </main>
+
+    <!-- EVIDENCE MODAL -->
+    <div class="modal-overlay" id="evidenceModal">
+        <div class="modal-dialog" style="max-width: 700px; padding: 20px; text-align: center; position: relative;">
+            <button class="toast-close" id="closeEvidenceModal" style="position: absolute; top: 12px; right: 14px; font-size: 1.5rem;" aria-label="Close modal">&times;</button>
+            <h3 class="text-sm font-bold text-muted uppercase tracking-wider mb-3">Photo Evidence Inspection</h3>
+            <div style="background: #000000; border-radius: var(--r-md); overflow: hidden; max-height: 70vh; display: flex; align-items: center; justify-content: center;">
+                <img id="evidenceImage" src="" alt="Complaint Evidence Photo" style="max-width: 100%; max-height: 68vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPTS ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="effects.js" defer></script>
+    <script src="teacher-dashboard.js" defer></script>
+
+</body>
+</html>

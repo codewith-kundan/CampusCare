@@ -1,181 +1,172 @@
-// ========================================
-// NITR CAMPUSCARE — RESET PASSWORD
-// ========================================
+// ===============================================
+// NITR CAMPUSCARE — RESET PASSWORD SCRIPT
+// ===============================================
 
 let recoverySessionReady = false;
 
-const resetForm = document.getElementById("resetForm");
-const resetMessage = document.getElementById("resetMessage");
-const resetSubmit = document.getElementById("resetSubmit");
-const recoveryStatus = document.getElementById("recoveryStatus");
+document.addEventListener("DOMContentLoaded", async () => {
 
-const newPasswordInput = document.getElementById("newPassword");
-const confirmPasswordInput = document.getElementById("confirmPassword");
-const passwordStrength = document.getElementById("passwordStrength");
+    const resetForm = document.getElementById("resetForm");
+    const resetMessage = document.getElementById("resetMessage");
+    const resetSubmit = document.getElementById("resetSubmit");
+    const recoveryStatus = document.getElementById("recoveryStatus");
 
+    const newPasswordInput = document.getElementById("newPassword");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const passwordStrength = document.getElementById("passwordStrength");
+    const toggleNewPassword = document.getElementById("toggleNewPassword");
 
-// ========================================
-// PASSWORD TOGGLE
-// ========================================
+    // ========================================
+    // PASSWORD TOGGLE
+    // ========================================
+    if (toggleNewPassword && newPasswordInput) {
+        toggleNewPassword.addEventListener("click", () => {
+            const isText = newPasswordInput.type === "text";
+            newPasswordInput.type = isText ? "password" : "text";
 
-const toggleNewPassword = document.getElementById("toggleNewPassword");
-
-if (toggleNewPassword && newPasswordInput) {
-
-    toggleNewPassword.addEventListener("click", () => {
-
-        const showing = newPasswordInput.type === "text";
-
-        newPasswordInput.type = showing ? "password" : "text";
-
-        toggleNewPassword.querySelector(".eye-show").style.display = showing ? "" : "none";
-        toggleNewPassword.querySelector(".eye-hide").style.display = showing ? "none" : "";
-    });
-}
-
-
-// ========================================
-// PASSWORD STRENGTH
-// ========================================
-
-if (newPasswordInput && passwordStrength) {
-
-    newPasswordInput.addEventListener("input", () => {
-
-        const value = newPasswordInput.value;
-        let score = 0;
-
-        if (value.length >= 6) score++;
-        if (value.length >= 10) score++;
-        if (/[A-Z]/.test(value) && /[0-9]/.test(value)) score++;
-        if (/[^A-Za-z0-9]/.test(value)) score++;
-
-        passwordStrength.dataset.level = value.length === 0 ? "0" : Math.max(1, score);
-    });
-}
-
-
-// ========================================
-// DETECT RECOVERY SESSION
-// Supabase parses the recovery token from the
-// URL automatically and fires PASSWORD_RECOVERY.
-// ========================================
-
-supabaseClient.auth.onAuthStateChange((event) => {
-
-    if (event === "PASSWORD_RECOVERY") {
-        recoverySessionReady = true;
-    }
-});
-
-(async function checkExistingSession() {
-
-    try {
-
-        const { data: { session } } = await supabaseClient.auth.getSession();
-
-        if (session) recoverySessionReady = true;
-
-    } catch (error) {
-
-        console.error("Session check failed:", error);
+            const eyeShow = toggleNewPassword.querySelector(".eye-show");
+            const eyeHide = toggleNewPassword.querySelector(".eye-hide");
+            if (eyeShow && eyeHide) {
+                eyeShow.style.display = isText ? "block" : "none";
+                eyeHide.style.display = isText ? "none" : "block";
+            }
+        });
     }
 
-})();
+    // ========================================
+    // PASSWORD STRENGTH METER
+    // ========================================
+    if (newPasswordInput && passwordStrength) {
+        newPasswordInput.addEventListener("input", () => {
+            const val = newPasswordInput.value;
+            let score = 0;
+            if (val.length >= 6) score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
 
-// If no recovery session shows up shortly, this link is
-// likely invalid or expired — let the student know instead
-// of leaving them on a form that will just fail.
-
-setTimeout(() => {
-
-    if (!recoverySessionReady && recoveryStatus) {
-        recoveryStatus.classList.add("is-visible");
+            passwordStrength.dataset.level = val.length === 0 ? "0" : Math.max(1, score);
+        });
     }
 
-}, 2500);
-
-
-// ========================================
-// SUBMIT
-// ========================================
-
-if (resetForm) {
-
-    resetForm.addEventListener("submit", async (event) => {
-
-        event.preventDefault();
-
-        resetMessage.textContent = "";
-
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-
-        if (newPassword.length < 6) {
-
-            resetMessage.textContent = "Password must contain at least 6 characters.";
-            resetMessage.style.color = "#dc2626";
-            return;
+    // ========================================
+    // URL HASH ERROR CHECK
+    // ========================================
+    const hash = window.location.hash;
+    if (hash.includes("error_description=") || hash.includes("error=")) {
+        const params = new URLSearchParams(hash.substring(1));
+        const errorMsg = params.get("error_description") || "The password reset link is invalid or has expired.";
+        if (recoveryStatus) {
+            recoveryStatus.innerHTML = `
+                <svg class="icon-sm" style="flex:none; color: var(--status-error-text);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                <span>${decodeURIComponent(errorMsg.replace(/\+/g, ' '))}</span>
+            `;
+            recoveryStatus.style.background = "#FEE2E2";
+            recoveryStatus.style.borderColor = "#FECACA";
+            recoveryStatus.style.color = "#991B1B";
+            recoveryStatus.classList.add("is-visible");
         }
+        if (resetSubmit) resetSubmit.disabled = true;
+        return;
+    }
 
-        if (newPassword !== confirmPassword) {
-
-            resetMessage.textContent = "Passwords do not match.";
-            resetMessage.style.color = "#dc2626";
-            return;
-        }
-
-
-        resetSubmit.disabled = true;
-        resetSubmit.classList.add("is-loading");
-
-        resetMessage.textContent = "Updating your password...";
-        resetMessage.style.color = "#475569";
-
+    // ========================================
+    // RECOVERY SESSION DETECTION
+    // ========================================
+    if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === "PASSWORD_RECOVERY" || session) {
+                recoverySessionReady = true;
+                if (recoveryStatus) recoveryStatus.classList.remove("is-visible");
+            }
+        });
 
         try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                recoverySessionReady = true;
+            }
+        } catch (e) {
+            console.warn("Session retrieval failed:", e);
+        }
+    }
 
-            const { error } = await supabaseClient.auth.updateUser({
-                password: newPassword
-            });
+    setTimeout(() => {
+        if (!recoverySessionReady && recoveryStatus && !hash.includes("access_token")) {
+            recoveryStatus.innerHTML = `
+                <svg class="icon-sm" style="flex:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Notice: Make sure you opened this page from the email reset link.</span>
+            `;
+            recoveryStatus.classList.add("is-visible");
+        }
+    }, 2000);
 
-            if (error) {
+    // ========================================
+    // FORM SUBMISSION
+    // ========================================
+    if (resetForm) {
+        resetForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!supabaseClient) return;
 
-                console.error("Password update error:", error);
+            const newPassword = newPasswordInput?.value;
+            const confirmPassword = confirmPasswordInput?.value;
 
-                resetMessage.textContent = error.message;
-                resetMessage.style.color = "#dc2626";
-
-                if (window.CampusCare) CampusCare.toast(error.message, "error");
-
+            if (!newPassword || newPassword.length < 6) {
+                if (resetMessage) {
+                    resetMessage.textContent = "Password must be at least 6 characters long.";
+                    resetMessage.className = "message text-red";
+                }
                 return;
             }
 
-            resetMessage.textContent = "Password updated! Redirecting to your dashboard...";
-            resetMessage.style.color = "#16a34a";
-
-            if (window.CampusCare) {
-                CampusCare.toast("Password updated successfully.", "success");
+            if (newPassword !== confirmPassword) {
+                if (resetMessage) {
+                    resetMessage.textContent = "Passwords do not match.";
+                    resetMessage.className = "message text-red";
+                }
+                return;
             }
 
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 1200);
+            resetSubmit.disabled = true;
+            resetSubmit.classList.add("is-loading");
+            if (resetMessage) {
+                resetMessage.textContent = "Updating password...";
+                resetMessage.className = "message text-slate";
+            }
 
-        } catch (error) {
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPassword
+                });
 
-            console.error(error);
+                if (error) throw error;
 
-            resetMessage.textContent = "Something went wrong. Please try again.";
-            resetMessage.style.color = "#dc2626";
+                if (resetMessage) {
+                    resetMessage.textContent = "Password successfully updated! Redirecting...";
+                    resetMessage.className = "message text-green font-bold";
+                }
 
-        } finally {
+                if (window.CampusCare) {
+                    CampusCare.toast("Password updated successfully.", "success");
+                }
 
-            resetSubmit.disabled = false;
-            resetSubmit.classList.remove("is-loading");
-        }
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
 
-    });
+            } catch (err) {
+                console.error("Password update error:", err);
+                if (resetMessage) {
+                    resetMessage.textContent = err.message || "Failed to update password.";
+                    resetMessage.className = "message text-red";
+                }
+                if (window.CampusCare) CampusCare.toast(err.message || "Update failed.", "error");
+            } finally {
+                resetSubmit.disabled = false;
+                resetSubmit.classList.remove("is-loading");
+            }
+        });
+    }
 
-}
+});

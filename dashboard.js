@@ -1,745 +1,231 @@
-// ========================================
-// NITR CAMPUSCARE DASHBOARD
-// ========================================
+// ===============================================
+// NITR CAMPUSCARE — STUDENT DASHBOARD SCRIPT
+// ===============================================
 
 let currentUser = null;
 
+document.addEventListener("DOMContentLoaded", () => {
 
-// ========================================
-// OPEN REGISTER COMPLAINT PAGE
-// ========================================
-
-function openComplaintPage() {
-
-    console.log("Register Complaint clicked");
-
-    window.location.href = "register-complaint.html";
-
-}
-
-
-// ========================================
-// LOAD USER
-// ========================================
-
-async function loadDashboard() {
-
-    try {
-
-        const {
-            data: { user },
-            error
-        } = await supabaseClient.auth.getUser();
-
-
-        // User is not logged in
-        if (error || !user) {
-
-            window.location.href = "login.html";
-
+    async function initDashboard() {
+        if (!supabaseClient) {
+            console.error("Supabase client not found.");
             return;
-
         }
 
+        try {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
 
-        console.log("Logged in user:", user);
+            if (error || !user) {
+                window.location.href = "login.html";
+                return;
+            }
 
-        currentUser = user;
+            const role = user.user_metadata?.role;
+            if (role === 'admin' || role === 'teacher') {
+                window.location.href = "teacher-dashboard.html";
+                return;
+            }
 
+            currentUser = user;
 
-        // ========================================
-        // USER METADATA
-        // ========================================
+            // Populate user profile info
+            const metadata = user.user_metadata || {};
+            const fullName = metadata.full_name || user.email.split('@')[0] || "Student";
+            const rollNumber = metadata.roll_number || "NITR Student";
+            const firstName = fullName.split(" ")[0];
 
-        const metadata =
-            user.user_metadata || {};
+            // Initials
+            const nameParts = fullName.split(" ");
+            const initials = nameParts.length > 1
+                ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                : fullName.slice(0, 2).toUpperCase();
 
-        const name =
-            metadata.full_name || "Student";
+            const userNameEl = document.getElementById("userName");
+            const welcomeNameEl = document.getElementById("welcomeName");
+            const profileNameEl = document.getElementById("profileName");
+            const profileEmailEl = document.getElementById("profileEmail");
+            const profileRollEl = document.getElementById("profileRoll");
+            const profileAvatarEl = document.getElementById("profileAvatar");
 
-        const rollNumber =
-            metadata.roll_number || "Not available";
+            if (userNameEl) userNameEl.textContent = firstName;
+            if (welcomeNameEl) welcomeNameEl.textContent = firstName;
+            if (profileNameEl) profileNameEl.textContent = fullName;
+            if (profileEmailEl) profileEmailEl.textContent = user.email || "";
+            if (profileRollEl) profileRollEl.textContent = rollNumber;
+            if (profileAvatarEl) profileAvatarEl.textContent = initials;
 
+            // Load Complaints
+            await loadComplaints(user);
 
-        // ========================================
-        // DISPLAY USER
-        // ========================================
+            // Subscribe to realtime updates
+            subscribeToComplaintChanges(user.id);
 
-        const userName =
-            document.getElementById("userName");
-
-        const welcomeName =
-            document.getElementById("welcomeName");
-
-        const profileName =
-            document.getElementById("profileName");
-
-        const profileEmail =
-            document.getElementById("profileEmail");
-
-        const profileRoll =
-            document.getElementById("profileRoll");
-
-
-        if (userName) {
-
-            userName.textContent = name;
-
+        } catch (err) {
+            console.error("Dashboard init error:", err);
         }
-
-
-        if (welcomeName) {
-
-            welcomeName.textContent =
-                name.split(" ")[0];
-
-        }
-
-
-        if (profileName) {
-
-            profileName.textContent = name;
-
-        }
-
-
-        if (profileEmail) {
-
-            profileEmail.textContent =
-                user.email || "";
-
-        }
-
-
-        if (profileRoll) {
-
-            profileRoll.textContent =
-                rollNumber;
-
-        }
-
-
-        // ========================================
-        // LOAD COMPLAINTS
-        // ========================================
-
-        await loadComplaints(user);
-
-
-        // ========================================
-        // LIVE UPDATES
-        // ========================================
-
-        subscribeToComplaintChanges(user.id);
-
-
     }
 
-    catch (error) {
+    initDashboard();
 
-        console.error(
-            "Dashboard error:",
-            error
-        );
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            if (window.CampusCare) {
+                const confirmed = await CampusCare.confirmDialog({
+                    title: "Sign Out",
+                    message: "Are you sure you want to sign out of your CampusCare account?",
+                    confirmLabel: "Sign Out",
+                    cancelLabel: "Stay Signed In",
+                    danger: true
+                });
+                if (!confirmed) return;
+            }
 
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+        });
     }
 
-}
+});
 
-
-// ========================================
-// LOAD COMPLAINTS
-// ========================================
-
+// ===============================================
+// LOAD COMPLAINTS & CALCULATE STATS
+// ===============================================
 async function loadComplaints(user) {
-
     try {
-
-        const {
-            data: complaints,
-            error
-        } = await supabaseClient
+        const { data: complaints, error } = await supabaseClient
             .from("complaints")
             .select("*")
             .eq("user_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
-
+            .order("created_at", { ascending: false });
 
         if (error) {
-
-            console.error(
-                "Complaint loading error:",
-                error
-            );
-
-            if (window.CampusCare) {
-                CampusCare.toast("Couldn't load your complaints. Please refresh.", "error");
-            }
-
+            console.error("Complaint loading error:", error);
+            if (window.CampusCare) CampusCare.toast("Couldn't load your complaints.", "error");
             return;
-
         }
 
+        const complaintData = complaints || [];
 
-        const complaintData =
-            complaints || [];
+        // Calculate statistics
+        const stats = {
+            total: complaintData.length,
+            pending: 0,
+            progress: 0,
+            completed: 0
+        };
 
+        complaintData.forEach(c => {
+            const s = (c.status || "").toLowerCase();
+            if (s === "pending" || s === "submitted") stats.pending++;
+            else if (s === "in progress") stats.progress++;
+            else if (s === "completed" || s === "resolved") stats.completed++;
+        });
 
-        // ========================================
-        // COUNTERS
-        // ========================================
+        // Update DOM Counters
+        const totalEl = document.getElementById("totalComplaints");
+        const pendingEl = document.getElementById("pendingComplaints");
+        const progressEl = document.getElementById("progressComplaints");
+        const completedEl = document.getElementById("completedComplaints");
 
-        const total =
-            complaintData.length;
+        if (totalEl) totalEl.textContent = stats.total;
+        if (pendingEl) pendingEl.textContent = stats.pending;
+        if (progressEl) progressEl.textContent = stats.progress;
+        if (completedEl) completedEl.textContent = stats.completed;
 
+        // Render Recent 5 Complaints
+        displayRecentComplaints(complaintData.slice(0, 5));
 
-        const pending =
-            complaintData.filter(
-                complaint =>
-                    String(complaint.status)
-                        .toLowerCase() === "pending"
-            ).length;
-
-
-        const progress =
-            complaintData.filter(
-                complaint =>
-                    String(complaint.status)
-                        .toLowerCase() === "in progress"
-            ).length;
-
-
-        const completed =
-            complaintData.filter(
-                complaint => {
-
-                    const status =
-                        String(
-                            complaint.status
-                        ).toLowerCase();
-
-                    return (
-                        status === "completed" ||
-                        status === "resolved"
-                    );
-
-                }
-            ).length;
-
-
-        // ========================================
-        // UPDATE COUNTERS
-        // ========================================
-
-        const totalElement =
-            document.getElementById(
-                "totalComplaints"
-            );
-
-        const pendingElement =
-            document.getElementById(
-                "pendingComplaints"
-            );
-
-        const progressElement =
-            document.getElementById(
-                "progressComplaints"
-            );
-
-        const completedElement =
-            document.getElementById(
-                "completedComplaints"
-            );
-
-
-        if (totalElement)
-            totalElement.textContent = total;
-
-        if (pendingElement)
-            pendingElement.textContent = pending;
-
-        if (progressElement)
-            progressElement.textContent = progress;
-
-        if (completedElement)
-            completedElement.textContent = completed;
-
-
-        // ========================================
-        // DISPLAY RECENT COMPLAINTS
-        // ========================================
-
-        displayComplaints(
-            complaintData
-        );
-
+    } catch (err) {
+        console.error("Complaint error:", err);
     }
-
-    catch (error) {
-
-        console.error(
-            "Complaint error:",
-            error
-        );
-
-    }
-
 }
 
-
-// ========================================
-// DISPLAY COMPLAINTS
-// ========================================
-
-function displayComplaints(complaints) {
-
-    const list =
-        document.getElementById(
-            "complaintsList"
-        );
-
-
+// ===============================================
+// RENDER RECENT COMPLAINTS
+// ===============================================
+function displayRecentComplaints(recent) {
+    const list = document.getElementById("complaintsList");
     if (!list) return;
 
-
-    // ========================================
-    // NO COMPLAINTS
-    // ========================================
-
-    if (complaints.length === 0) {
-
+    if (recent.length === 0) {
         list.innerHTML = `
-
             <div class="empty-state">
-
-                <div class="empty-icon">
-                    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>
+                <div style="color: var(--slate-light); margin-bottom: 12px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto;"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg>
                 </div>
-
-                <h3>
-                    No complaints yet
-                </h3>
-
-                <p>
-                    Your submitted complaints will appear here.
-                </p>
-
-                <button
-                    type="button"
-                    class="primary-btn"
-                    id="emptyComplaintBtn">
-
-                    Register Your First Complaint
-
-                </button>
-
+                <h3 style="margin-bottom: 6px; font-size: 1.0625rem;">No grievances registered yet</h3>
+                <p class="text-muted text-xs mb-4">When you submit maintenance issues, they will appear here with live tracking.</p>
+                <a href="register-complaint.html" class="btn btn-primary btn-sm">+ File Your First Grievance</a>
             </div>
-
         `;
-
-
-        const button =
-            document.getElementById(
-                "emptyComplaintBtn"
-            );
-
-
-        if (button) {
-
-            button.addEventListener(
-                "click",
-                openComplaintPage
-            );
-
-        }
-
-
         return;
-
     }
 
+    list.innerHTML = recent.map(complaint => {
+        const status = complaint.status || "Submitted";
+        const statusClass = getStatusClass(status);
+        const shortId = String(complaint.id).slice(0, 8);
 
-    // ========================================
-    // RECENT 5 COMPLAINTS
-    // ========================================
-
-    const recent =
-        complaints.slice(0, 5);
-
-
-    list.innerHTML =
-        recent.map(
-            complaint => {
-
-                const status =
-                    complaint.status ||
-                    "Pending";
-
-
-                let statusClass =
-                    "status-pending";
-
-
-                if (
-                    status.toLowerCase() ===
-                    "in progress"
-                ) {
-
-                    statusClass =
-                        "status-progress";
-
-                }
-
-
-                if (
-                    status.toLowerCase() ===
-                    "completed" ||
-                    status.toLowerCase() ===
-                    "resolved"
-                ) {
-
-                    statusClass =
-                        "status-completed";
-
-                }
-
-
-                return `
-
-                    <div class="complaint-item" data-id="${escapeHTML(complaint.id)}">
-
-                        <div class="complaint-info">
-
-                            <span class="complaint-category">
-
-                                ${escapeHTML(
-                                    complaint.category ||
-                                    "General"
-                                )}
-
-                            </span>
-
-                            <h3>
-
-                                ${escapeHTML(
-                                    complaint.title ||
-                                    "Untitled Complaint"
-                                )}
-
-                            </h3>
-
-                            <p>
-
-                                ${formatDate(
-                                    complaint.created_at
-                                )}
-
-                            </p>
-
-                        </div>
-
-                        <span
-                            class="complaint-status ${statusClass}">
-
-                            ${escapeHTML(status)}
-
-                        </span>
-
+        return `
+            <div class="complaint-item" onclick="window.location.href='complaint-details.html?id=${encodeURIComponent(complaint.id)}'">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                        <span class="text-xs font-bold" style="color: var(--nitr-red); text-transform: uppercase; letter-spacing: 0.5px;">${escapeHTML(complaint.category || "General")}</span>
+                        <span class="text-xs text-muted font-mono">#${shortId}</span>
+                        <span class="text-xs text-muted">• ${formatDate(complaint.created_at)}</span>
                     </div>
-
-                `;
-
-            }
-        ).join("");
-
-
-    list.querySelectorAll(".complaint-item").forEach(item => {
-
-        item.addEventListener("click", () => {
-
-            const id = item.dataset.id;
-
-            if (id) {
-                window.location.href = "complaint-details.html?id=" + encodeURIComponent(id);
-            }
-        });
-    });
-
+                    <h3 class="truncate" style="font-size: 0.9375rem; color: var(--navy-900); font-weight: 600;">${escapeHTML(complaint.title || "Untitled Complaint")}</h3>
+                </div>
+                <span class="status-badge ${statusClass}">${escapeHTML(status)}</span>
+            </div>
+        `;
+    }).join("");
 }
 
-
-// ========================================
-// LIVE UPDATES (Supabase Realtime)
-// Requires Realtime to be enabled for the
-// "complaints" table on this Supabase project —
-// silently does nothing otherwise.
-// ========================================
-
+// ===============================================
+// REALTIME SUBSCRIPTION
+// ===============================================
 function subscribeToComplaintChanges(userId) {
-
     try {
-
         supabaseClient
             .channel("dashboard-complaints-" + userId)
             .on(
                 "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "complaints",
-                    filter: "user_id=eq." + userId
-                },
+                { event: "*", schema: "public", table: "complaints", filter: "user_id=eq." + userId },
                 () => {
                     loadComplaints({ id: userId });
+                    if (window.CampusCare) CampusCare.toast("Dashboard updated with live change.", "info", 2000);
                 }
             )
             .subscribe();
-
     } catch (error) {
-
         console.warn("Realtime subscription unavailable:", error);
     }
-
 }
 
+// ===============================================
+// UTILITIES
+// ===============================================
+function getStatusClass(status) {
+    const s = String(status).toLowerCase();
+    if (s === "pending") return "status-pending";
+    if (s === "in progress") return "status-progress";
+    if (s === "completed" || s === "resolved") return "status-resolved";
+    if (s === "rejected") return "status-rejected";
+    return "status-submitted";
+}
 
-// ========================================
-// PROFILE MODAL
-// ========================================
-
-function openProfileModal() {
-
-    if (!currentUser) return;
-
-    const metadata = currentUser.user_metadata || {};
-
-    const overlay = document.createElement("div");
-    overlay.className = "modal-overlay";
-
-    overlay.innerHTML = `
-        <div class="modal-box" role="dialog" aria-modal="true">
-            <h3>Your Profile</h3>
-            <div style="margin-top:18px; display:flex; flex-direction:column; gap:14px;">
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px;">
-                    <span style="color:var(--slate); font-size:13px;">Full Name</span>
-                    <strong style="font-size:13px;">${escapeHTML(metadata.full_name || "Student")}</strong>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px;">
-                    <span style="color:var(--slate); font-size:13px;">Email</span>
-                    <strong style="font-size:13px; word-break:break-all; text-align:right;">${escapeHTML(currentUser.email || "—")}</strong>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px;">
-                    <span style="color:var(--slate); font-size:13px;">Roll Number</span>
-                    <strong class="mono" style="font-size:13px;">${escapeHTML(metadata.roll_number || "—")}</strong>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--slate); font-size:13px;">Member Since</span>
-                    <strong style="font-size:13px;">${formatDate(currentUser.created_at)}</strong>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn btn-primary" data-act="confirm">Close</button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
-    document.body.classList.add("nav-locked");
-
-    requestAnimationFrame(() => overlay.classList.add("is-in"));
-
-    function close() {
-        overlay.classList.remove("is-in");
-        document.body.classList.remove("nav-locked");
-        setTimeout(() => overlay.remove(), 250);
-    }
-
-    overlay.addEventListener("click", (e) => {
-        if (e.target === overlay || e.target.closest("[data-act]")) close();
+function formatDate(dateString) {
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("en-IN", {
+        day: "numeric", month: "short", year: "numeric"
     });
 }
 
-
-// ========================================
-// LOGOUT
-// ========================================
-
-async function logout() {
-
-    if (window.CampusCare) {
-
-        const confirmed = await CampusCare.confirmDialog({
-            title: "Log out?",
-            message: "You'll need to sign in again to access your dashboard.",
-            confirmLabel: "Log out",
-            cancelLabel: "Stay signed in"
-        });
-
-        if (!confirmed) return;
-    }
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.auth.signOut();
-
-
-        if (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
-            return;
-
-        }
-
-
-        window.location.href =
-            "login.html";
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-    }
-
-}
-
-
-// ========================================
-// FORMAT DATE
-// ========================================
-
-function formatDate(dateString) {
-
-    if (!dateString) {
-
-        return "";
-
-    }
-
-
-    return new Date(
-        dateString
-    ).toLocaleDateString(
-        "en-IN",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-// ========================================
-// ESCAPE HTML
-// ========================================
-
 function escapeHTML(value) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        String(value);
-
+    const div = document.createElement("div");
+    div.textContent = String(value);
     return div.innerHTML;
-
 }
-
-
-// ========================================
-// BUTTON EVENTS
-// ========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-
-        // Register complaint
-        const newComplaintBtn =
-            document.getElementById(
-                "newComplaintBtn"
-            );
-
-
-        if (newComplaintBtn) {
-
-            newComplaintBtn.addEventListener(
-                "click",
-                openComplaintPage
-            );
-
-        }
-
-
-        // Logout
-        const logoutBtn =
-            document.getElementById(
-                "logoutBtn"
-            );
-
-
-        if (logoutBtn) {
-
-            logoutBtn.addEventListener(
-                "click",
-                logout
-            );
-
-        }
-
-
-        // View all
-        const viewAllBtn =
-            document.getElementById(
-                "viewAllBtn"
-            );
-
-
-        if (viewAllBtn) {
-
-            viewAllBtn.addEventListener(
-                "click",
-                () => {
-
-                    window.location.href =
-                "my-complaints.html";
-
-                }
-            );
-
-        }
-
-
-        // Profile modal
-        const profileBtn =
-            document.getElementById("profileBtn");
-
-        if (profileBtn) {
-            profileBtn.addEventListener("click", openProfileModal);
-        }
-
-    }
-);
-
-
-// ========================================
-// START
-// ========================================
-
-loadDashboard();
