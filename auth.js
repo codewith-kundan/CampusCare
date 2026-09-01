@@ -236,16 +236,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (error) throw error;
 
                 if (registerMessage) {
-                    registerMessage.textContent = "Account created! Check your email to verify and sign in.";
+                    registerMessage.textContent = "Account created successfully! You can now sign in.";
                     registerMessage.className = "message text-green font-bold";
                 }
 
                 if (window.CampusCare) {
-                    CampusCare.toast("Account created! Please check your email to verify.", "success", 5000);
+                    CampusCare.toast("Account created successfully! Please sign in.", "success", 4000);
                 }
 
                 registerForm.reset();
                 if (passwordStrength) passwordStrength.dataset.level = "0";
+
+                // Automatically switch to sign-in view after a short delay
+                setTimeout(() => {
+                    if (registerSection && loginSection) {
+                        registerSection.classList.add("hidden");
+                        loginSection.classList.remove("hidden");
+                        const emailInput = document.getElementById("email");
+                        if (emailInput) emailInput.value = email;
+                    }
+                }, 1000);
 
             } catch (err) {
                 console.error("Sign up failed:", err);

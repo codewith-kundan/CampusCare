@@ -1,1 +1,8 @@
+node_modules/
 .vercel
+.DS_Store
+*.log
+campuscare.db
+campuscare.db-shm
+campuscare.db-wal
+uploads/

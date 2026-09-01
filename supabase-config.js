@@ -1,25 +1,14 @@
-// ==========================================
-// NITR CAMPUSCARE — SUPABASE CONFIGURATION
-// ==========================================
+// ===============================================
+// NITR CAMPUSCARE — SELF-HOSTED CLIENT INITIALIZER
+// ===============================================
 
-const SUPABASE_URL = "https://uhvdjaxkohumyerihaah.supabase.co";
-const SUPABASE_KEY = "sb_publishable_hyE7HjRXJczx0tUmHZiYDQ_3StB_JRV";
+// Supabase compatibility bridge to self-hosted Node.js + SQLite backend
+let supabaseClient = window.supabaseClient || null;
 
-let supabaseClient = null;
-
-try {
-    if (typeof window !== "undefined" && window.supabase && typeof window.supabase.createClient === "function") {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true,
-                detectSessionInUrl: true
-            }
-        });
-        window.supabaseClient = supabaseClient;
+if (!supabaseClient && typeof window !== 'undefined') {
+    if (window.CampusCareAPI) {
+        supabaseClient = window.supabaseClient;
     } else {
-        console.warn("Supabase SDK is not loaded yet. Will attempt late binding if needed.");
+        console.log('CampusCare Self-Hosted API Client initializing...');
     }
-} catch (e) {
-    console.error("Supabase client initialization error:", e);
 }
