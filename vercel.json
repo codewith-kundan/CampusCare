@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://campuscare-6p0z.onrender.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://campuscare-6p0z.onrender.com/uploads/:path*" }
+  ]
+}

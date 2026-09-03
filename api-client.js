@@ -153,6 +153,13 @@
                 });
             },
 
+            async updatePriority(id, priority) {
+                return await CampusCareAPI.request(`/api/complaints/${encodeURIComponent(id)}/priority`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ priority })
+                });
+            },
+
             async updateNotes(id, teacherNotes) {
                 return await CampusCareAPI.request(`/api/complaints/${encodeURIComponent(id)}/notes`, {
                     method: 'PATCH',
@@ -273,7 +280,7 @@
             }
         }
 
-        async update(payload) {
+        update(payload) {
             this._updatePayload = payload;
             return this;
         }
@@ -300,6 +307,9 @@
                         } else if (id) {
                             if (this._updatePayload.status) {
                                 const res = await CampusCareAPI.complaints.updateStatus(id, this._updatePayload.status, '', this._updatePayload.teacher_notes);
+                                return { data: res.data, error: null };
+                            } else if (this._updatePayload.priority) {
+                                const res = await CampusCareAPI.complaints.updatePriority(id, this._updatePayload.priority);
                                 return { data: res.data, error: null };
                             } else if (this._updatePayload.teacher_notes !== undefined) {
                                 const res = await CampusCareAPI.complaints.updateNotes(id, this._updatePayload.teacher_notes);

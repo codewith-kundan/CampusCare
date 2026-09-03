@@ -486,6 +486,37 @@ app.patch('/api/complaints/:id/status', authenticateToken, (req, res) => {
     }
 });
 
+// PATCH /api/complaints/:id/priority
+app.patch('/api/complaints/:id/priority', authenticateToken, (req, res) => {
+    try {
+        const isStaff = (req.user.role === 'teacher' || req.user.role === 'admin');
+        if (!isStaff) {
+            return res.status(403).json({ error: 'Staff access required.' });
+        }
+
+        const complaintId = req.params.id;
+        const { priority } = req.body;
+        if (!priority) {
+            return res.status(400).json({ error: 'Priority is required.' });
+        }
+
+        db.prepare(`
+            UPDATE complaints
+            SET priority = ?, updated_at = datetime('now')
+            WHERE id = ?
+        `).run(priority, complaintId);
+
+        const updated = db.prepare('SELECT * FROM complaints WHERE id = ?').get(complaintId);
+        broadcastEvent('priority_update', updated);
+
+        return res.json({ data: updated, message: `Priority updated to ${priority}.` });
+
+    } catch (err) {
+        console.error('Update priority error:', err);
+        return res.status(500).json({ error: 'Failed to update priority.' });
+    }
+});
+
 // PATCH /api/complaints/:id/notes
 app.patch('/api/complaints/:id/notes', authenticateToken, (req, res) => {
     try {
