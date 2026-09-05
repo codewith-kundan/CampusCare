@@ -639,5 +639,5 @@ function startServer(port) {
     });
 }
 
-startServer(process.env.PORT ? parseInt(process.env.PORT, 10) : 4000);
+startServer(process.env.PORT ? parseInt(process.env.PORT, 10) : PORT);
 

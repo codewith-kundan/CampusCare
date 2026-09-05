@@ -72,14 +72,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ========================================
     // RECOVERY SESSION DETECTION
+    // (Self-hosted: we check for token in URL or existing session)
     // ========================================
     if (supabaseClient) {
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === "PASSWORD_RECOVERY" || session) {
-                recoverySessionReady = true;
-                if (recoveryStatus) recoveryStatus.classList.remove("is-visible");
-            }
-        });
+        // Use onAuthStateChange if available (bridge provides this)
+        if (typeof supabaseClient.auth.onAuthStateChange === 'function') {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === "PASSWORD_RECOVERY" || session) {
+                    recoverySessionReady = true;
+                    if (recoveryStatus) recoveryStatus.classList.remove("is-visible");
+                }
+            });
+        }
 
         try {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -87,19 +91,31 @@ document.addEventListener("DOMContentLoaded", async () => {
                 recoverySessionReady = true;
             }
         } catch (e) {
-            console.warn("Session retrieval failed:", e);
+            console.warn("Session retrieval notice:", e);
+        }
+
+        // Check for reset token in URL query params (self-hosted flow)
+        const urlParams = new URLSearchParams(window.location.search);
+        const resetToken = urlParams.get("token");
+        if (resetToken) {
+            recoverySessionReady = true;
+            // Store token for form submission
+            window._resetToken = resetToken;
         }
     }
 
+    // For self-hosted flow, always allow password reset since there's no email-based token verification
+    // The form submission will handle validation
     setTimeout(() => {
         if (!recoverySessionReady && recoveryStatus && !hash.includes("access_token")) {
+            // In self-hosted mode, show a softer notice — user can still proceed
             recoveryStatus.innerHTML = `
                 <svg class="icon-sm" style="flex:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>Notice: Make sure you opened this page from the email reset link.</span>
+                <span>Enter your new password below. If you arrived from the reset email link, your token will be applied automatically.</span>
             `;
             recoveryStatus.classList.add("is-visible");
         }
-    }, 2000);
+    }, 1500);
 
     // ========================================
     // FORM SUBMISSION
@@ -152,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 setTimeout(() => {
-                    window.location.href = "dashboard.html";
+                    window.location.href = "login.html";
                 }, 1000);
 
             } catch (err) {

@@ -262,72 +262,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                let evidencePath = null;
+                let result;
 
-                // Upload Evidence to Supabase Storage if file attached
                 if (selectedFile) {
-                    const safeName = selectedFile.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-                    const filePath = `${currentUser.id}/${Date.now()}_${safeName}`;
-                    
-                    try {
-                        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-                            .from(EVIDENCE_BUCKET)
-                            .upload(filePath, selectedFile, { cacheControl: "3600", upsert: false });
+                    // Use FormData for direct multipart submission (file + fields in one request)
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('description', description);
+                    formData.append('category', category);
+                    formData.append('priority', priority);
+                    if (location) formData.append('location', location);
+                    formData.append('evidence', selectedFile);
 
-                        if (uploadError) {
-                            console.warn("Storage upload notice:", uploadError.message);
-                        } else {
-                            evidencePath = uploadData?.path || filePath;
-                        }
-                    } catch (uploadErr) {
-                        console.warn("Photo upload caught exception:", uploadErr);
-                    }
-                }
+                    const apiResult = await CampusCareAPI.complaints.create(formData);
+                    result = { data: apiResult.data || apiResult, error: null };
+                } else {
+                    // JSON submission via Supabase bridge
+                    const payload = {
+                        user_id: currentUser.id,
+                        student_name: studentName,
+                        category: category,
+                        title: title,
+                        description: description,
+                        status: "Submitted",
+                        priority: priority
+                    };
 
-                // Prepare insert payload
-                const payload = {
-                    user_id: currentUser.id,
-                    student_name: studentName,
-                    category: category,
-                    title: title,
-                    description: description,
-                    status: "Submitted",
-                    priority: priority
-                };
+                    if (location) payload.location = location;
 
-                if (location) payload.location = location;
-                if (evidencePath) payload.evidence_path = evidencePath;
-
-                // Resilient Insert (retries without optional columns if DB schema is unmigrated)
-                let result = await supabaseClient.from("complaints").insert([payload]).select().single();
-
-                if (result.error && result.error.message.includes("location")) {
-                    delete payload.location;
-                    result = await supabaseClient.from("complaints").insert([payload]).select().single();
-                }
-
-                if (result.error && result.error.message.includes("priority")) {
-                    delete payload.priority;
-                    result = await supabaseClient.from("complaints").insert([payload]).select().single();
-                }
-
-                if (result.error && result.error.message.includes("evidence_path")) {
-                    delete payload.evidence_path;
                     result = await supabaseClient.from("complaints").insert([payload]).select().single();
                 }
 
                 if (result.error) throw result.error;
 
-                // Also try recording initial status in complaint_status_history
-                if (result.data?.id) {
-                    try {
-                        await supabaseClient.from("complaint_status_history").insert([{
-                            complaint_id: result.data.id,
-                            status: "Submitted",
-                            note: "Complaint initially filed by student."
-                        }]);
-                    } catch (hErr) {}
-                }
+                // Status history is recorded server-side automatically
 
                 if (messageEl) {
                     messageEl.textContent = "Complaint registered successfully! Redirecting to your complaints ledger...";

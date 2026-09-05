@@ -56,13 +56,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const complaint = data[0];
+        // History is attached by the bridge from the API response
+        const history = complaint._history || [];
+
         displayComplaint(complaint);
 
         if (loading) loading.style.display = "none";
         if (content) content.style.display = "grid";
 
-        // Load audit history for timeline
-        loadComplaintHistory(complaint.id, complaint.created_at);
+        // Load audit history for timeline (use pre-fetched history)
+        loadComplaintHistory(complaint.id, complaint.created_at, history);
 
         // Realtime sync
         subscribeToComplaintChanges(complaint.id);
@@ -136,7 +139,7 @@ function displayComplaint(complaint) {
 // ===============================================
 // LOAD STATUS HISTORY TIMELINE
 // ===============================================
-async function loadComplaintHistory(id, createdAt) {
+async function loadComplaintHistory(id, createdAt, prefetchedHistory) {
     const submittedDateEl = document.getElementById("timelineDateSubmitted");
     const pendingDateEl = document.getElementById("timelineDatePending");
     const progressDateEl = document.getElementById("timelineDateProgress");
@@ -144,24 +147,17 @@ async function loadComplaintHistory(id, createdAt) {
 
     if (submittedDateEl) submittedDateEl.textContent = formatDate(createdAt);
 
-    try {
-        const { data: history, error } = await supabaseClient
-            .from("complaint_status_history")
-            .select("*")
-            .eq("complaint_id", id)
-            .order("created_at", { ascending: true });
+    // Use pre-fetched history from the API response
+    const history = prefetchedHistory || [];
 
-        if (!error && history && history.length > 0) {
-            history.forEach(h => {
-                const s = (h.status || "").toLowerCase();
-                const d = formatDate(h.created_at);
-                if (s === "pending" && pendingDateEl) pendingDateEl.textContent = d;
-                if (s === "in progress" && progressDateEl) progressDateEl.textContent = d;
-                if ((s === "completed" || s === "resolved") && completedDateEl) completedDateEl.textContent = d;
-            });
-        }
-    } catch (e) {
-        console.warn("History fetch notice:", e);
+    if (history.length > 0) {
+        history.forEach(h => {
+            const s = (h.status || "").toLowerCase();
+            const d = formatDate(h.created_at);
+            if (s === "pending" && pendingDateEl) pendingDateEl.textContent = d;
+            if (s === "in progress" && progressDateEl) progressDateEl.textContent = d;
+            if ((s === "completed" || s === "resolved") && completedDateEl) completedDateEl.textContent = d;
+        });
     }
 }
 

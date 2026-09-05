@@ -205,6 +205,38 @@
     }
 
     // ===========================================
+    // CHAINABLE RESULT WRAPPER
+    // Allows .select().single() after .insert()
+    // ===========================================
+    class ChainableResult {
+        constructor(dataPromise) {
+            this._promise = dataPromise;
+        }
+
+        select() {
+            return this;
+        }
+
+        single() {
+            return this._promise.then(result => {
+                const d = result.data;
+                return {
+                    data: Array.isArray(d) ? d[0] : d,
+                    error: result.error
+                };
+            });
+        }
+
+        then(resolve, reject) {
+            return this._promise.then(resolve, reject);
+        }
+
+        catch(reject) {
+            return this._promise.catch(reject);
+        }
+    }
+
+    // ===========================================
     // SUPABASE COMPATIBILITY BRIDGE
     // ===========================================
     class SupabaseQueryBuilder {
@@ -216,6 +248,7 @@
             this._limit = null;
             this._page = 0;
             this._isCountHead = false;
+            this._inFilters = {};
         }
 
         select(cols = '*', options = {}) {
@@ -233,6 +266,7 @@
 
         in(col, vals) {
             if (Array.isArray(vals)) {
+                this._inFilters[col] = vals;
                 this.filters[col] = vals.join(',');
             }
             return this;
@@ -265,19 +299,27 @@
             return this;
         }
 
-        async insert(rows) {
+        insert(rows) {
             const row = Array.isArray(rows) ? rows[0] : rows;
-            try {
-                if (this.table === 'complaints') {
-                    const res = await CampusCareAPI.complaints.create(row);
-                    return { data: res.data || row, error: null };
-                } else if (this.table === 'complaint_status_history') {
-                    return { data: row, error: null };
-                }
-                return { data: row, error: null };
-            } catch (err) {
-                return { data: null, error: err };
+
+            // complaint_status_history inserts are handled server-side automatically
+            if (this.table === 'complaint_status_history') {
+                return new ChainableResult(Promise.resolve({ data: row, error: null }));
             }
+
+            const promise = (async () => {
+                try {
+                    if (this.table === 'complaints') {
+                        const res = await CampusCareAPI.complaints.create(row);
+                        return { data: res.data || row, error: null };
+                    }
+                    return { data: row, error: null };
+                } catch (err) {
+                    return { data: null, error: err };
+                }
+            })();
+
+            return new ChainableResult(promise);
         }
 
         update(payload) {
@@ -286,77 +328,103 @@
         }
 
         async single() {
-            const { data, error } = await this.then(r => ({ data: r.data, error: r.error }));
+            const result = await this._execute();
             return {
-                data: Array.isArray(data) ? data[0] : data,
-                error
+                data: Array.isArray(result.data) ? result.data[0] : result.data,
+                error: result.error
             };
         }
 
         then(resolve, reject) {
-            const exec = async () => {
-                try {
-                    // Update operation
-                    if (this._updatePayload) {
-                        const id = this.filters['id'];
-                        const ids = this.filters['id'] ? this.filters['id'].split(',') : null;
+            return this._execute().then(resolve, reject);
+        }
 
-                        if (ids && ids.length > 1) {
-                            await CampusCareAPI.complaints.bulkStatus(ids, this._updatePayload.status, 'Bulk update');
-                            return { data: null, error: null };
-                        } else if (id) {
-                            if (this._updatePayload.status) {
-                                const res = await CampusCareAPI.complaints.updateStatus(id, this._updatePayload.status, '', this._updatePayload.teacher_notes);
-                                return { data: res.data, error: null };
-                            } else if (this._updatePayload.priority) {
-                                const res = await CampusCareAPI.complaints.updatePriority(id, this._updatePayload.priority);
-                                return { data: res.data, error: null };
-                            } else if (this._updatePayload.teacher_notes !== undefined) {
-                                const res = await CampusCareAPI.complaints.updateNotes(id, this._updatePayload.teacher_notes);
-                                return { data: res.data, error: null };
-                            }
+        async _execute() {
+            try {
+                // complaint_status_history — no-op for queries and inserts (handled server-side)
+                if (this.table === 'complaint_status_history') {
+                    return { data: [], error: null };
+                }
+
+                // Update operation
+                if (this._updatePayload) {
+                    // Bulk update via .in("id", [...])
+                    const inIds = this._inFilters['id'];
+                    if (inIds && inIds.length > 1) {
+                        if (this._updatePayload.status) {
+                            await CampusCareAPI.complaints.bulkStatus(inIds, this._updatePayload.status, 'Bulk update');
                         }
                         return { data: null, error: null };
                     }
 
-                    // Count Query
-                    if (this._isCountHead) {
-                        const analytics = await CampusCareAPI.complaints.getAnalytics();
-                        let count = analytics.total?.count || 0;
-                        if (this.filters['status']) {
-                            const st = String(this.filters['status']).toLowerCase();
-                            if (st.includes('pending') || st.includes('submitted')) count = analytics.pending?.count || 0;
-                            else if (st.includes('progress')) count = analytics.inProgress?.count || 0;
-                            else if (st.includes('resolved') || st.includes('completed')) count = analytics.resolved?.count || 0;
+                    // Single update via .eq("id", val)
+                    const id = this.filters['id'];
+                    if (id) {
+                        if (this._updatePayload.status) {
+                            const res = await CampusCareAPI.complaints.updateStatus(id, this._updatePayload.status, '', this._updatePayload.teacher_notes);
+                            return { data: res.data, error: null };
+                        } else if (this._updatePayload.priority) {
+                            const res = await CampusCareAPI.complaints.updatePriority(id, this._updatePayload.priority);
+                            return { data: res.data, error: null };
+                        } else if (this._updatePayload.teacher_notes !== undefined) {
+                            const res = await CampusCareAPI.complaints.updateNotes(id, this._updatePayload.teacher_notes);
+                            return { data: res.data, error: null };
                         }
-                        return { count, data: null, error: null };
                     }
-
-                    // Complaint by ID
-                    if (this.filters['id']) {
-                        const res = await CampusCareAPI.complaints.get(this.filters['id']);
-                        return { data: [res.complaint], error: null };
-                    }
-
-                    // Complaint List Query
-                    const data = await CampusCareAPI.complaints.list(this.filters);
-                    return { data, error: null };
-
-                } catch (err) {
-                    return { data: null, error: err };
+                    return { data: null, error: null };
                 }
-            };
 
-            return exec().then(resolve, reject);
+                // Count Query
+                if (this._isCountHead) {
+                    const analytics = await CampusCareAPI.complaints.getAnalytics();
+                    let count = analytics.total?.count || 0;
+                    const statusFilter = this.filters['status'] || (this._inFilters['status'] || []).join(',');
+                    if (statusFilter) {
+                        const st = String(statusFilter).toLowerCase();
+                        if (st.includes('pending') || st.includes('submitted')) count = analytics.pending?.count || 0;
+                        else if (st.includes('progress')) count = analytics.inProgress?.count || 0;
+                        else if (st.includes('resolved') || st.includes('completed')) count = analytics.resolved?.count || 0;
+                    }
+                    return { count, data: null, error: null };
+                }
+
+                // Complaint by ID — use detail endpoint which returns history too
+                if (this.filters['id'] && !this.filters['user_id'] && !this.filters['search']) {
+                    const res = await CampusCareAPI.complaints.get(this.filters['id']);
+                    // Attach history to the complaint object so callers can access it
+                    const complaint = res.complaint || res;
+                    if (res.history) {
+                        complaint._history = res.history;
+                    }
+                    return { data: [complaint], error: null };
+                }
+
+                // Complaint List Query
+                const data = await CampusCareAPI.complaints.list(this.filters);
+                return { data, error: null };
+
+            } catch (err) {
+                return { data: null, error: err };
+            }
         }
     }
+
+    // ===========================================
+    // AUTH STATE CHANGE LISTENERS
+    // ===========================================
+    const authStateListeners = new Set();
 
     const supabaseClientBridge = {
         auth: {
             async signInWithPassword({ email, password }) {
                 try {
                     const data = await CampusCareAPI.auth.login(email, password);
-                    return { data: { user: data.user, session: { access_token: data.token } }, error: null };
+                    const result = { data: { user: data.user, session: { access_token: data.token } }, error: null };
+                    // Notify auth state listeners
+                    for (const cb of authStateListeners) {
+                        try { cb('SIGNED_IN', { access_token: data.token, user: data.user }); } catch (e) {}
+                    }
+                    return result;
                 } catch (err) {
                     return { data: { user: null, session: null }, error: err };
                 }
@@ -383,8 +451,22 @@
                 return await CampusCareAPI.auth.getUser();
             },
 
+            async getSession() {
+                const token = CampusCareAPI.getToken();
+                const user = CampusCareAPI.getUserSync();
+                if (token && user) {
+                    return { data: { session: { access_token: token, user } }, error: null };
+                }
+                return { data: { session: null }, error: null };
+            },
+
             async signOut() {
-                return await CampusCareAPI.auth.logout();
+                const result = await CampusCareAPI.auth.logout();
+                // Notify auth state listeners
+                for (const cb of authStateListeners) {
+                    try { cb('SIGNED_OUT', null); } catch (e) {}
+                }
+                return result;
             },
 
             async resetPasswordForEmail(email) {
@@ -398,11 +480,36 @@
 
             async updateUser({ password }) {
                 try {
-                    const data = await CampusCareAPI.auth.resetPassword(password);
+                    // For self-hosted flow, pass the current user's email so server can find the user
+                    const user = CampusCareAPI.getUserSync();
+                    const email = user?.email || null;
+                    const data = await CampusCareAPI.auth.resetPassword(password, null, email);
                     return { data, error: null };
                 } catch (err) {
                     return { data: null, error: err };
                 }
+            },
+
+            onAuthStateChange(callback) {
+                authStateListeners.add(callback);
+                // Immediately fire with current state
+                const token = CampusCareAPI.getToken();
+                const user = CampusCareAPI.getUserSync();
+                if (token && user) {
+                    try {
+                        callback('INITIAL_SESSION', { access_token: token, user });
+                    } catch (e) {}
+                }
+                // Return an object with unsubscribe method (Supabase convention)
+                return {
+                    data: {
+                        subscription: {
+                            unsubscribe() {
+                                authStateListeners.delete(callback);
+                            }
+                        }
+                    }
+                };
             }
         },
 
